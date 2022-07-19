@@ -13,9 +13,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import io.dronefleet.mavlink.Mavlink2Message;
 import io.dronefleet.mavlink.MavlinkConnection;
 import io.dronefleet.mavlink.MavlinkMessage;
 import io.dronefleet.mavlink.common.CommandLong;
+import io.dronefleet.mavlink.common.Heartbeat;
 import io.dronefleet.mavlink.common.MissionItemInt;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -96,18 +98,27 @@ public class MAVLinkConnection {
                             {
                                 try
                                     {
-                                        pipedInputStream2.read(sendData);
-                                        System.out.println("send:" + Integer.toString(sendData.length));
-                                        SocketAddress remoteAddress = receivePacket.getSocketAddress();
-                                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, remoteAddress);
+                                        if(pipedInputStream2.available() > 0)
+                                        {
+                                            int len = pipedInputStream2.read(sendData);
+                                            if(len >= 0)
+                                            {
 
-                                        sendSocket.send(sendPacket);
+                                                SocketAddress remoteAddress = receivePacket.getSocketAddress();
+                                                Log.i("GLDRONE-SEND", "sendto "+ remoteAddress.toString() + " : "+ Integer.toString(len) );
+                                                DatagramPacket sendPacket = new DatagramPacket(sendData, len, remoteAddress);
+                                                sendSocket.send(sendPacket);
+                                            }
+                                        }
+
+
+
                                     }catch(IOException e) {
                                     e.printStackTrace();
                                     }
                             }
                         });
-                        //t.start(); // 启动新线程
+                        t.start(); // 启动新线程
 
                         Thread t2 = new Thread(() -> {
                             while(true)
@@ -125,7 +136,7 @@ public class MAVLinkConnection {
 
                             }
                         });
-                        t2.start(); // 启动新线程
+                        //t2.start(); // 启动新线程
 
                         Thread t3 = new Thread(() -> {
                             while(true)
@@ -142,6 +153,7 @@ public class MAVLinkConnection {
                                         recvSocket.receive(receivePacket);// 在接收到信息之前，一直保持阻塞状态
                                         //System.out.println("recv:" + Integer.toString(receiveData.length));
                                         pipedOutputStream.write(receiveData);
+                                        pipedOutputStream.flush();
                                     }
                                 }catch(IOException e) {
                                     e.printStackTrace();
@@ -154,19 +166,54 @@ public class MAVLinkConnection {
 
                     }
 
+                    // Now we are ready to read and send messages.
 
                     while ((message = connection.next()) != null) {
+                        // The received message could be either a Mavlink1 message, or a Mavlink2 message.
+                        // To check if the message is a Mavlink2 message, we could do the following:
+                        if (message instanceof Mavlink2Message) {
+                            // This is a Mavlink2 message.
+                            Mavlink2Message message2 = (Mavlink2Message)message;
 
-                        // If receive data, push them to Drone_Message.java
-                        drone_message.Message_classify(message);
-                        mHandler.obtainMessage(100, "Connected...").sendToTarget();
-
-                        // Ask Drone Feedback in first connection
-                        if(!isAskingFeedback){
-                            Drone_Command.STATUS();
-                            isAskingFeedback = true;
+                            //drone_message.Message_classify(message2);
+//                            if (message2.isSigned()) {
+//                                // This is a signed message. Let's validate its signature.
+//                                if (message2.validateSignature(mySecretKey)) {
+//                                    // Signature is valid.
+//                                } else {
+//                                    // Signature validation failed. This message is suspicious and
+//                                    // should not be handled. Perhaps we should log this incident.
+//                                }
+//                            } else {
+//                                // This is an unsigned message.
+//                            }
+                        } else {
+                            // This is a Mavlink1 message.
+                            //drone_message.Message_classify(message);
                         }
+
+                        // When a message is received, its payload type isn't statically available.
+                        // We can resolve which kind of message it is by its payload, like so:
+                        if (message.getPayload() instanceof Heartbeat) {
+                            // This is a heartbeat message
+                            MavlinkMessage<Heartbeat> heartbeatMessage = (MavlinkMessage<Heartbeat>)message;
+                            Log.i("Heartbeat", heartbeatMessage.toString());
+                        }
+                        // We are better off by publishing the payload to a pub/sub mechanism such
+                        // as RxJava, JMS or any other favorite instead, though.
                     }
+//                    while ((message = connection.next()) != null) {
+//
+//                        // If receive data, push them to Drone_Message.java
+//                        drone_message.Message_classify(message);
+//                        mHandler.obtainMessage(100, "Connected...").sendToTarget();
+//
+//                        // Ask Drone Feedback in first connection
+//                        if(!isAskingFeedback){
+//                            Drone_Command.STATUS();
+//                            isAskingFeedback = true;
+//                        }
+//                    }
 
                 } catch (EOFException eof) {
                     Release_Connection();

@@ -43,6 +43,7 @@ public class Drone_Message {
         if (message.getPayload() instanceof Heartbeat) {
             MavlinkMessage<Heartbeat> heartbeatMessage = (MavlinkMessage<Heartbeat>)message;
             String payload = "" + heartbeatMessage.getPayload();
+            Log.i("dlronepayload", payload);
             String[] payload_Heartbeat = payload.split(",");
             String mav_type_ = payload_Heartbeat[1].replaceAll("[^A-Z_]", "");
             if(mav_type_.equals("MAV_TYPE_QUADROTOR"))
@@ -68,6 +69,7 @@ public class Drone_Message {
                 mHandler.obtainMessage(201, str_arm_disarm).sendToTarget();
                 mHandler.obtainMessage(200, flight_mode).sendToTarget();
                 Log.i("Drone_Message", "HEARTBEAT: " + mav_type + " " + mav_autopilot + " " + flight_mode + " " + system_status + " " + arm_disarm);
+                Log.i("MODE_TYPE", flight_mode);
             }
         }
         // GLOBAL_POSITION_INT ( #33 )

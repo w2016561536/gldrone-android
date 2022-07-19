@@ -7,7 +7,12 @@ import android.os.Handler;
 import android.os.Message;
 import java.lang.ref.WeakReference;
 
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+
+import io.dronefleet.mavlink.common.CommandLong;
+import io.dronefleet.mavlink.common.MavCmd;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +38,28 @@ public class MainActivity extends AppCompatActivity {
             MAVLinkConnection.Create_Connection();
         });
         t.start(); // 启动新线程
+
+        Button btTest1 = (Button)findViewById(R.id.bt_send1);
+        btTest1.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                CommandLong cmd = new CommandLong.Builder().command(MavCmd.MAV_CMD_COMPONENT_ARM_DISARM).param1(0).build();
+                MAVLinkConnection.Send(cmd);
+            }
+        });
+
+        Button btTest2 = (Button)findViewById(R.id.bt_send2);
+        btTest2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                CommandLong cmd = new CommandLong.Builder().command(MavCmd.MAV_CMD_DO_SET_MODE).param1(1).param2(7).param3(0).build();
+                MAVLinkConnection.Send(cmd);
+            }
+        });
     }
 
     // This handler will handle TextView UI
