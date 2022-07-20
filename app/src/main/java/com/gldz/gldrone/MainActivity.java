@@ -1,27 +1,46 @@
 package com.gldz.gldrone;
 
+
+import static com.MAVLink.minimal.msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import java.lang.ref.WeakReference;
 
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.concurrent.TimeUnit;
+
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import com.MAVLink.MAVLinkPacket;
+import com.MAVLink.Parser;
+import com.MAVLink.common.msg_command_long;
+import com.MAVLink.enums.MAV_AUTOPILOT;
+import com.MAVLink.enums.MAV_CMD;
+import com.MAVLink.enums.MAV_MODE_FLAG;
+import com.MAVLink.enums.MAV_TYPE;
+import com.MAVLink.minimal.msg_heartbeat;
+
 import io.dronefleet.mavlink.common.CommandLong;
+
 import io.dronefleet.mavlink.common.MavCmd;
 
+import io.mavsdk.mavsdkserver.MavsdkServer;
+
+
 public class MainActivity extends AppCompatActivity {
-
-    // Handler
-    static MyHandler mHandler;
-
-    // MAVLinkConnection
-    MAVLinkConnection MAVLinkConnection;
-
+    DatagramSocket sendSocket;
+    MavsdkServer server = new MavsdkServer();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,15 +48,78 @@ public class MainActivity extends AppCompatActivity {
         // KEEP_SCREEN_ON
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mHandler = new MyHandler(this);
-        // MAVLinkConnection
-        MAVLinkConnection = new MAVLinkConnection(mHandler);
 
+        Thread t1 = new Thread(() -> {
+            try
+            {
+                Parser parser = new Parser();
+                byte[] receiveData = new byte[512];
+                DatagramSocket recvSocket = new DatagramSocket(14550);
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                while(true)
+                {
+                    recvSocket.receive(receivePacket);// 在接收到信息之前，一直保持阻塞状态
+                    for(int i=0;i<receivePacket.getLength();i++)
+                    {
 
-        Thread t = new Thread(() -> {
-            MAVLinkConnection.Create_Connection();
+                        MAVLinkPacket msg = parser.mavlink_parse_char(receiveData[i]);
+                        if(msg != null)
+                        {
+                            //Log.i("MAVLINK", String.valueOf(msg.msgid));
+                            if(msg.msgid == MAVLINK_MSG_ID_HEARTBEAT)
+                            {
+
+                                msg_heartbeat heart = new msg_heartbeat();
+                                heart.unpack(msg.payload);
+
+                                Log.i("MAVLINK", heart.toString());
+                            }
+                        }
+                    }
+                }
+            }catch(IOException e) {
+                e.printStackTrace();
+            }
         });
-        t.start(); // 启动新线程
+        t1.start(); // 启动新线程
+
+        try {
+            sendSocket = new DatagramSocket(14556);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        Thread t2 = new Thread(() -> {
+            try
+            {
+
+
+                while(true)
+                {
+
+                    msg_heartbeat heart = new msg_heartbeat();
+                    heart.type = MAV_TYPE.MAV_TYPE_GCS;
+                    heart.autopilot = MAV_AUTOPILOT.MAV_AUTOPILOT_GENERIC;
+
+
+                    MAVLinkPacket msg = heart.pack();
+                    msg.isMavlink2 = false;
+                    msg.sysid = 0;
+                    msg.compid = 0;
+                    byte[] byteMsg = msg.encodePacket();
+                    DatagramPacket sendPacket = new DatagramPacket(byteMsg, byteMsg.length, InetAddress.getByName("10.0.0.1"),14556);
+                    sendSocket.send(sendPacket);
+                    Log.i("MAVLINK", "send "+ String.valueOf(sendPacket.getLength()));
+                    Thread.sleep(1000);
+                }
+            }catch(IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        //t2.start(); // 启动新线程
+
 
         Button btTest1 = (Button)findViewById(R.id.bt_send1);
         btTest1.setOnClickListener(new View.OnClickListener() {
@@ -45,8 +127,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                CommandLong cmd = new CommandLong.Builder().command(MavCmd.MAV_CMD_COMPONENT_ARM_DISARM).param1(0).build();
-                MAVLinkConnection.Send(cmd);
+
+                Thread t = new Thread(() -> {
+                    try
+                    {
+
+                            msg_command_long cmd = new msg_command_long();
+                            cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
+                            cmd.param1 = 0;
+                            cmd.param2 = 209;
+                            cmd.param3 = 7;
+
+
+                            MAVLinkPacket msg = cmd.pack();
+                            msg.isMavlink2 = false;
+                            msg.sysid = 0;
+                            msg.compid = 0;
+                            byte[] byteMsg = msg.encodePacket();
+
+
+                            DatagramPacket sendPacket = new DatagramPacket(byteMsg, byteMsg.length, InetAddress.getByName("10.0.0.1"),14556);
+                            sendSocket.send(sendPacket);
+                            Log.i("MAVLINK", "send "+ String.valueOf(sendPacket.getLength()));
+
+                    }catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                t.start(); // 启动新线程
             }
         });
 
@@ -56,67 +164,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                CommandLong cmd = new CommandLong.Builder().command(MavCmd.MAV_CMD_DO_SET_MODE).param1(1).param2(7).param3(0).build();
-                MAVLinkConnection.Send(cmd);
+                Thread t = new Thread(() -> {
+                    try
+                    {
+
+                        msg_command_long cmd = new msg_command_long();
+                        cmd.command = MAV_CMD.MAV_CMD_NAV_TAKEOFF;
+                        cmd.param7 = 1;
+
+
+                        MAVLinkPacket msg = cmd.pack();
+                        msg.isMavlink2 = false;
+                        msg.sysid = 0;
+                        msg.compid = 0;
+                        byte[] byteMsg = msg.encodePacket();
+
+
+                        DatagramPacket sendPacket = new DatagramPacket(byteMsg, byteMsg.length, InetAddress.getByName("10.0.0.1"),14556);
+                        sendSocket.send(sendPacket);
+                        Log.i("MAVLINK", "send "+ String.valueOf(sendPacket.getLength()));
+
+                    }catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                t.start(); // 启动新线程
             }
         });
     }
 
-    // This handler will handle TextView UI
-    private static class MyHandler extends Handler {
-        private final WeakReference<MainActivity> mActivity;
-        public MyHandler(MainActivity activity) {
-            mActivity = new WeakReference<>(activity);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-
-                // USB or TCP connection status (refer to MAVLinkConnection.java)
-                case 100:
-                    String connection_PIXHAWK = (String) msg.obj;
-                    //mActivity.get().display_PIXHAWK.setText(connection_PIXHAWK);
-                    break;
-                // FlightMode
-                case 200:
-                    String FlightMode = (String) msg.obj;
-                    //mActivity.get().display_FlightMode.setText(FlightMode);
-                    break;
-                // isArmed
-                case 201:
-                    String isArmed = (String) msg.obj;
-                    //mActivity.get().display_isArmed.setText(isArmed);
-                    break;
-                // Location
-                case 202:
-                    String Location = (String) msg.obj;
-                    //mActivity.get().display_Location.setText(Location);
-                    break;
-                // Speed
-                case 203:
-                    String Speed = (String) msg.obj;
-                    //mActivity.get().display_Speed.setText(Speed);
-                    break;
-                // Battery
-                case 204:
-                    String Battery = (String) msg.obj;
-                    //mActivity.get().display_Battery.setText(Battery);
-                    break;
-                // CMD
-                case 300:
-                    String web_cmd = (String) msg.obj;
-                    //mActivity.get().display_drone_command.append("\n" + web_cmd);
-                    break;
-                // CMD_ACK
-                case 301:
-                    String cmd_ack = (String) msg.obj;
-                    //mActivity.get().display_drone_command_ack.append("\n" + cmd_ack);
-                    break;
-//                // Sensor Data (refer to UsbService.java)
-//                case UsbService.SYNC_READ:
-//                    String sensor_data = (String) msg.obj;
-//                    break;
-            }
-        }
-    }
 }
