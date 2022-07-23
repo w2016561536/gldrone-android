@@ -30,8 +30,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Mavlink {
+
+    public final static String[] MODE = {"MANUAL", "STABILIZED","OFFBOARD"};//, "ACRO",  "ALTCTL", "POSCTL", "AUTO_MISSION", "AUTO_LOITER", "AUTO_RTL", "AUTO_TAKEOFF", "STABILIZED", "AUTO_LAND", "AUTO_PRECLAND"};
 
     enum PX4_MODE
     {
@@ -85,6 +89,9 @@ public class Mavlink {
 
     private DatagramSocket socket;
 
+    private int heartBeatCheckCount = 0;
+    private int cnt2s = 0;
+
     public Mavlink()
     {
         try {
@@ -112,19 +119,33 @@ public class Mavlink {
         });
         recvThread.start();
 
-        Thread heartbeatThread = new Thread(() -> {
-            try {
-                while (true) {
-                    sendMsgHeartbeat();
-                    Thread.sleep(1000);
+
+
+
+        Timer mTimer = new Timer();
+        TimerTask mTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+
+                sendMsgHeartbeat();
+
+                cnt2s++;
+                if(cnt2s >= 2)
+                {
+                    //Log.i("MAVLINK", "mTimerTask");
+                    cnt2s = 0;
+                    if(heartBeatCheckCount > 0)
+                    {
+                        heartBeatCheckCount = 0;
+                        mMavlinkListener.connect(true);
+                    }else{
+                        mMavlinkListener.connect(false);
+                    }
                 }
-            }catch (InterruptedException e) {
-                e.printStackTrace();
+
             }
-        });
-        heartbeatThread.start();
-
-
+        };
+        mTimer.schedule(mTimerTask, 1000,1000);
 
     }
 
@@ -168,8 +189,11 @@ public class Mavlink {
         byte mainMode = (byte)(heart.custom_mode >> 16);
         byte subMode =  (byte)(heart.custom_mode >> 24);
         PX4_MODE mode = getMode(mainMode,subMode);
+        heartBeatCheckCount++;
+        //Log.i("MAVLINK",String.valueOf(mainMode) + " " + String.valueOf(subMode) + " " + px4ModeString(mode));
 
-        Log.i("MAVLINK",String.valueOf(mainMode) + " " + String.valueOf(subMode) + " " + px4ModeString(mode));
+        if(mMavlinkListener != null)
+            mMavlinkListener.mode(mode);
     }
 
     private PX4_MODE getMode(byte mainMode,byte subMode)
@@ -286,6 +310,19 @@ public class Mavlink {
         }
     }
 
+    public void setMode(String mode){
+        if(mode.equals("MANUAL"))
+        {
+            sendMsgSetMode(PX4_CUSTOM_MAIN_MODE_MANUAL,0);
+        }
+        else if(mode.equals("STABILIZED"))
+        {
+            sendMsgSetMode(PX4_CUSTOM_MAIN_MODE_STABILIZED,0);
+        }else if(mode.equals("OFFBOARD")){
+            sendMsgSetMode(PX4_CUSTOM_MAIN_MODE_OFFBOARD,0);
+        }
+    }
+
     public String px4ModeString(PX4_MODE mode)
     {
         String modeStr = "UNSUPPORT";
@@ -332,5 +369,27 @@ public class Mavlink {
                 break;
         }
         return modeStr;
+    }
+
+    public static String printHexString(byte[] b) {
+        String res = "";
+        for (int i = 0; i < b.length; i++) {
+            String hex = Integer.toHexString(b[i] & 0xFF);
+            if (hex.length() == 1) {
+                hex = '0' + hex;
+            }
+            res += hex;
+            res += " ";
+        }
+        return res;
+    }
+
+    MavlinkListener mMavlinkListener = null;
+    public void setMavlinkListener(MavlinkListener mavlinkListener) {
+        mMavlinkListener = mavlinkListener;
+    }
+    public interface MavlinkListener {
+        public void mode(PX4_MODE mode);
+        public void connect(boolean isConnect);
     }
 }
