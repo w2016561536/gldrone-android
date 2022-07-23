@@ -19,10 +19,13 @@ import com.MAVLink.Parser;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private int[] ch = {1500,1500,1000,1500};
 
     Mavlink mavlink;
     @Override
@@ -65,12 +68,31 @@ public class MainActivity extends AppCompatActivity {
                         if(isConnect)
                         {
                             tv_connect.setText("Connected");
-                            tv_connect.setTextColor(Color.GREEN);
+                            tv_connect.setTextColor(Color.BLUE);
                         }
                         else
                         {
                             tv_connect.setText("Disconnected");
                             tv_connect.setTextColor(Color.RED);
+                        }
+
+                    }
+                });
+            }
+
+            @Override
+            public void armed(boolean isArm) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        if(isArm)
+                        {
+                            tv_arm.setText("Arm");
+                            tv_arm.setTextColor(Color.BLUE);
+                        }
+                        else
+                        {
+                            tv_arm.setText("Disarm");
+                            tv_arm.setTextColor(Color.RED);
                         }
 
                     }
@@ -85,11 +107,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void report(int x, int y) {
                 // TODO Auto-generated method stub
+                ch[2] = y;
+                ch[3] = x;
                 //Log.i("LEFT", String.valueOf(x) + " " + String.valueOf(y));
                 tv_ch3.setText("CH3:"+String.valueOf(y));
                 tv_ch4.setText("CH4:"+String.valueOf(x));
-//                transsion.setCh3((int)(1540+ y*500.0));
-//                transsion.setCh4((int)(1500+ x*200.0));
             }
         });
         RockerView rv_right = (RockerView)findViewById(R.id.rv_right);
@@ -98,11 +120,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void report(int x, int y) {
                 // TODO Auto-generated method stub
-                Log.i("RIGHT", String.valueOf(x) + " " + String.valueOf(y));
+                ch[0] = x;
+                ch[1] = y;
+                //Log.i("RIGHT", String.valueOf(x) + " " + String.valueOf(y));
                 tv_ch1.setText("CH1:"+String.valueOf(x));
                 tv_ch2.setText("CH2:"+String.valueOf(y));
-//                transsion.setCh1((int)(1500+x*200.0));
-//                transsion.setCh2((int)(1500-y*200.0));
             }
         });
 
@@ -127,8 +149,30 @@ public class MainActivity extends AppCompatActivity {
                  alertDialogModeSelect.show();
 
              }
-         });
+        });
 
+        tv_arm.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+
+                mavlink.sendMsgDisarm(1);
+
+            }
+        });
+
+
+
+        Timer mTimer = new Timer();
+        TimerTask mTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mavlink.sendMsgRC(ch[0],ch[1],ch[2],ch[3]);
+            }
+        };
+        mTimer.schedule(mTimerTask, 50,50);
 
 //        Thread t1 = new Thread(() -> {
 //            try {
