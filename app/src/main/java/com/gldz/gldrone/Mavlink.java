@@ -168,7 +168,8 @@ public class Mavlink {
         byte mainMode = (byte)(heart.custom_mode >> 16);
         byte subMode =  (byte)(heart.custom_mode >> 24);
         PX4_MODE mode = getMode(mainMode,subMode);
-        Log.i("MAVLINK",String.valueOf(mainMode) + " " + String.valueOf(subMode));
+
+        Log.i("MAVLINK",String.valueOf(mainMode) + " " + String.valueOf(subMode) + " " + px4ModeString(mode));
     }
 
     private PX4_MODE getMode(byte mainMode,byte subMode)
@@ -283,5 +284,53 @@ public class Mavlink {
                     break;
             }
         }
+    }
+
+    public String px4ModeString(PX4_MODE mode)
+    {
+        String modeStr = "UNSUPPORT";
+        switch (mode)
+        {
+            case MANUAL:
+                modeStr = "MANUAL";
+                break;
+            case ALTCTL:
+                modeStr = "ALTCTL";
+                break;
+            case POSCTL:
+                modeStr = "POSCTL";
+                break;
+            case AUTO_MISSION:
+                modeStr = "AUTO_MISSION";
+                break;
+            case AUTO_LOITER:
+                modeStr = "AUTO_LOITER";
+                break;
+            case AUTO_RTL:
+                modeStr = "AUTO_RTL";
+                break;
+            case ACRO:
+                modeStr = "ACRO";
+                break;
+            case OFFBOARD:
+                modeStr = "OFFBOARD";
+                break;
+            case STABILIZED:
+                modeStr = "STABILIZED";
+                break;
+            case AUTO_TAKEOFF:
+                modeStr = "AUTO_TAKEOFF";
+                break;
+            case AUTO_LAND:
+                modeStr = "AUTO_LAND";
+                break;
+            case AUTO_PRECLAND:
+                modeStr = "AUTO_PRECLAND";
+                break;
+            default:
+                modeStr = "UNSUPPORT";
+                break;
+        }
+        return modeStr;
     }
 }
