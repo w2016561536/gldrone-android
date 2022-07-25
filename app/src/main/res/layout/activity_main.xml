@@ -67,7 +67,27 @@
         android:fontFamily="monospace"
         android:text="YAW CH4:1500" />
 
+    <TextView
+        android:id="@+id/tv_ch5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_ch4"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="MOD CH5:1500" />
 
+    <TextView
+        android:id="@+id/tv_ch6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_ch5"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="ARM CH6:1500" />
 
     <TextView
         android:id="@+id/tv_connect"
@@ -112,5 +132,15 @@
         android:layout_marginTop="6dp"
         android:layout_marginEnd="6dp"
         android:text="SET" />
+
+    <Button
+        android:id="@+id/bt_disarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bt_setting"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
+        android:text="Disarm" />
 
 </RelativeLayout>

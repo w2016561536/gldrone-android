@@ -224,7 +224,7 @@ public class Mavlink {
         sendMsg(heart.pack());
     }
 
-    public void sendMsgRC(int ch1,int ch2,int ch3,int ch4)
+    public void sendMsgRC(int ch1,int ch2,int ch3,int ch4,int ch5,int ch6)
     {
         msg_rc_channels_override rc = new msg_rc_channels_override();
         rc.sysid = M_SYS_ID;
@@ -235,8 +235,8 @@ public class Mavlink {
         rc.chan2_raw = ch2;
         rc.chan3_raw = ch3;
         rc.chan4_raw = ch4;
-        rc.chan5_raw = 1500;
-        rc.chan6_raw = 1500;
+        rc.chan5_raw = ch5;
+        rc.chan6_raw = ch6;
         rc.chan7_raw = 1500;
         rc.chan8_raw = 1500;
 

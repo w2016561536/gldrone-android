@@ -31,7 +31,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    private int[] ch = {1500,1500,1000,1500};
+    private int[] ch = {1500,1500,1000,1500,1500,1500};
 
     private SensorManager mSensorManager;
     private Sensor mGyroSensor;
@@ -48,10 +48,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     float mPhoneAngleValues[] = new float[3];
 
     Button bt_setting = null;
+    Button bt_disarm = null;
     TextView tv_ch1 = null;
     TextView tv_ch2 = null;
     TextView tv_ch3 = null;
     TextView tv_ch4 = null;
+    TextView tv_ch5 = null;
+    TextView tv_ch6 = null;
     TextView tv_mode = null;
     TextView tv_connect = null;
     TextView tv_arm = null;
@@ -80,10 +83,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tv_ch2 = (TextView)findViewById(R.id.tv_ch2);
         tv_ch3 = (TextView)findViewById(R.id.tv_ch3);
         tv_ch4 = (TextView)findViewById(R.id.tv_ch4);
+        tv_ch5 = (TextView)findViewById(R.id.tv_ch5);
+        tv_ch6 = (TextView)findViewById(R.id.tv_ch6);
         tv_mode = (TextView)findViewById(R.id.tv_mode);
         tv_connect = (TextView)findViewById(R.id.tv_connect);
         tv_arm = (TextView)findViewById(R.id.tv_arm);
-
+        bt_disarm = (Button)findViewById(R.id.bt_disarm);
         bt_setting = (Button) findViewById(R.id.bt_setting);
 
         mavlink = new Mavlink();
@@ -136,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 });
             }
         });
+
 
 
         rv_left = (RockerView)findViewById(R.id.rv_left);
@@ -219,22 +225,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 // TODO Auto-generated method stub
 
-
-                mavlink.sendMsgDisarm(1);
+                ch[5] = 2000;
+                tv_ch6.setText("ARM CH6:"+String.valueOf(ch[5]));
+                //mavlink.sendMsgDisarm(1);
 
             }
         });
 
+        bt_disarm.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+                ch[5] = 1000;
+                tv_ch6.setText("ARM CH6:"+String.valueOf(ch[5]));
+                //mavlink.sendMsgDisarm(0);
+
+            }
+        });
 
         Timer mTimer = new Timer();
         TimerTask mTimerTask = new TimerTask() {
             @Override
             public void run() {
-                mavlink.sendMsgRC(ch[0],ch[1],ch[2],ch[3]);
+                mavlink.sendMsgRC(ch[0],ch[1],ch[2],ch[3],ch[4],ch[5]);
             }
         };
-        mTimer.schedule(mTimerTask, 4,4);
+        mTimer.schedule(mTimerTask, 5,5);
 
 //        Thread t1 = new Thread(() -> {
 //            try {
