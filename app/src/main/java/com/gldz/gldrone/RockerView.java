@@ -36,6 +36,9 @@ public class RockerView extends View {
     public boolean xRETURN = false;
     public boolean yRETURN = false;
 
+    public int Sensitivity = 520;
+    public boolean touchEnable = true;
+
     public void setMode(boolean xLock,boolean xTHR,boolean xRETURN,boolean yLock,boolean yTHR,boolean yRETURN)
     {
         this.xLock = xLock;
@@ -133,6 +136,9 @@ public class RockerView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(!touchEnable)
+            return true;
+
         // TODO Auto-generated method stub
         if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
             // 当触屏区域不在活动范围内
@@ -193,16 +199,32 @@ public class RockerView extends View {
         {
 //            int xValue = (int)(1500 + 500 * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
 //            int yValue = (int)(1500 + 500 * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
-            int xValue = (int)(1500 + 520 * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
-            int yValue = (int)(1500 + 520 * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
+
+
+            int xValue = (int)(1500 + Sensitivity * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
+            int yValue = (int)(1500 + Sensitivity * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
             if(mRockerChangeListener != null) {
                 mRockerChangeListener.report(limit_rc(xValue), limit_rc(yValue));
             }
         }
     }
 
+    public void setXY(int x,int y)
+    {
+        x = limit_rc(x);
+        y = limit_rc(y);
 
-    public int limit_rc(int input)
+        if(mCenterPoint != null)
+        {
+            mRockerBtn_X = (float)(x-1500) / Sensitivity * Differ_R + mCenterPoint.x;
+            mRockerBtn_Y = mCenterPoint.y - (float)(y-1500) / Sensitivity * Differ_R;
+
+            //Log.i("RIGHT", String.valueOf(mRockerBtn_X) + " " + String.valueOf(mRockerBtn_Y) + " " + String.valueOf(x) + " " + String.valueOf(y)  );
+        }
+
+    }
+
+    public static int limit_rc(int input)
     {
         int rc = input;
         if(input > 2000)

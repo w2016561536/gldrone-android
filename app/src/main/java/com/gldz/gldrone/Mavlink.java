@@ -384,7 +384,7 @@ public class Mavlink {
                     heart.unpack(msg.payload);
                     heart.sysid = msg.sysid;
                     heart.compid = msg.compid;
-                    Log.i("MAVLINK",heart.toString());
+                    //Log.i("MAVLINK",heart.toString());
                     recvMsgHeartbeat(heart);
                     break;
                 case MAVLINK_MSG_ID_SERIAL_CONTROL:
@@ -392,7 +392,7 @@ public class Mavlink {
                     break;
 
                 case MAVLINK_MSG_ID_ALTITUDE:
-                    Log.i("MAVLINK", "MAVLINK_MSG_ID_ALTITUDE");
+                    //Log.i("MAVLINK", "MAVLINK_MSG_ID_ALTITUDE");
                     break;
                 case MAVLINK_MSG_ID_ATTITUDE:
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_ATTITUDE");

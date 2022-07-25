@@ -31,7 +31,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
-        android:text="CH1:1500" />
+        android:fontFamily="monospace"
+        android:text="ROL CH1:1500" />
 
     <TextView
         android:id="@+id/tv_ch2"
@@ -41,7 +42,8 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
-        android:text="CH2:1500" />
+        android:fontFamily="monospace"
+        android:text="PIT CH2:1500" />
 
     <TextView
         android:id="@+id/tv_ch3"
@@ -51,7 +53,8 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
-        android:text="CH3:1000" />
+        android:fontFamily="monospace"
+        android:text="THR CH3:1000" />
 
     <TextView
         android:id="@+id/tv_ch4"
@@ -61,19 +64,10 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
-        android:text="CH4:1500" />
+        android:fontFamily="monospace"
+        android:text="YAW CH4:1500" />
 
-    <TextView
-        android:id="@+id/tv_mode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="23dp"
-        android:text="MANUAL"
-        android:textColor="#009688"
-        android:textSize="34sp" />
+
 
     <TextView
         android:id="@+id/tv_connect"
@@ -96,5 +90,27 @@
         android:layout_toEndOf="@+id/tv_ch1"
         android:text="Disarm"
         android:textColor="#FF1100" />
+
+    <TextView
+        android:id="@+id/tv_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="18dp"
+        android:layout_toStartOf="@+id/bt_setting"
+        android:text="MANUAL"
+        android:textColor="#009688"
+        android:textSize="34sp" />
+
+    <Button
+        android:id="@+id/bt_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
+        android:text="SET" />
 
 </RelativeLayout>
