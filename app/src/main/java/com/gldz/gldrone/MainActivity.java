@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 mavlink.sendMsgRC(ch[0],ch[1],ch[2],ch[3]);
             }
         };
-        mTimer.schedule(mTimerTask, 50,50);
+        mTimer.schedule(mTimerTask, 4,4);
 
 //        Thread t1 = new Thread(() -> {
 //            try {

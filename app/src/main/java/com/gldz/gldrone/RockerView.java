@@ -191,12 +191,25 @@ public class RockerView extends View {
     {
         if(mCenterPoint != null)
         {
-            int xValue = (int)(1500 + 500 * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
-            int yValue = (int)(1500 + 500 * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
-
+//            int xValue = (int)(1500 + 500 * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
+//            int yValue = (int)(1500 + 500 * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
+            int xValue = (int)(1500 + 520 * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
+            int yValue = (int)(1500 + 520 * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
             if(mRockerChangeListener != null) {
-                mRockerChangeListener.report(xValue, yValue);
+                mRockerChangeListener.report(limit_rc(xValue), limit_rc(yValue));
             }
         }
+    }
+
+
+    public int limit_rc(int input)
+    {
+        int rc = input;
+        if(input > 2000)
+            rc = 2000;
+        else if(input < 1000)
+            rc = 1000;
+
+        return rc;
     }
 }

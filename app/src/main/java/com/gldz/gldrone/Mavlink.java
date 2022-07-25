@@ -171,8 +171,8 @@ public class Mavlink {
     public void setMsgInterval()
     {
 
-        sendSetMsgInterval(MAVLINK_MSG_ID_ALTITUDE,500000);
-        //sendSetMsgInterval(MAVLINK_MSG_ID_RC_CHANNELS_RAW,1000);
+        sendSetMsgInterval(MAVLINK_MSG_ID_ALTITUDE,1000000);
+        sendSetMsgInterval(MAVLINK_MSG_ID_RC_CHANNELS_RAW,1000000);
     }
 
     public void sendSetMsgInterval(int msgid,int interval)
@@ -238,6 +238,7 @@ public class Mavlink {
         rc.chan5_raw = 1500;
         rc.chan6_raw = 1500;
         rc.chan7_raw = 1500;
+        rc.chan8_raw = 1500;
 
         sendMsg(rc.pack());
     }
@@ -257,7 +258,6 @@ public class Mavlink {
 
         sendMsg(cmd.pack());
     }
-
 
 
     private void recvMsgHeartbeat(msg_heartbeat heart)
