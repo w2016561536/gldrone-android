@@ -16,10 +16,13 @@ import android.util.Log;
 
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Parser;
+import com.MAVLink.common.msg_attitude;
 import com.MAVLink.common.msg_command_ack;
 import com.MAVLink.common.msg_command_long;
 import com.MAVLink.common.msg_rc_channels_override;
 import com.MAVLink.common.msg_rc_channels_raw;
+import com.MAVLink.common.msg_servo_output_raw;
+import com.MAVLink.common.msg_sys_status;
 import com.MAVLink.enums.MAV_AUTOPILOT;
 import com.MAVLink.enums.MAV_CMD;
 import com.MAVLink.enums.MAV_COMPONENT;
@@ -98,6 +101,9 @@ public class Mavlink {
 
     private boolean isFirstConnect = true;
 
+    public boolean socketInitSuccess = false;
+    public boolean is_armed = false;
+
     public Mavlink()
     {
         try {
@@ -105,6 +111,9 @@ public class Mavlink {
         } catch (SocketException e) {
             e.printStackTrace();
         }
+
+        if(socket == null)
+            return;
 
         Thread recvThread = new Thread(() -> {
             try {
@@ -160,6 +169,7 @@ public class Mavlink {
         };
         mTimer.schedule(mTimerTask, 1000,1000);
 
+        socketInitSuccess = true;
     }
 
     public void setFirst()
@@ -170,7 +180,7 @@ public class Mavlink {
 
     public void setMsgInterval()
     {
-
+        sendSetMsgInterval(MAVLINK_MSG_ID_ATTITUDE,1000000);
         sendSetMsgInterval(MAVLINK_MSG_ID_ALTITUDE,1000000);
         sendSetMsgInterval(MAVLINK_MSG_ID_RC_CHANNELS_RAW,1000000);
     }
@@ -300,8 +310,10 @@ public class Mavlink {
         }
 
         if((heart.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED) != 0){
+            is_armed = true;
             mMavlinkListener.armed(true);
         }else{
+            is_armed = false;
             mMavlinkListener.armed(false);
         }
 
@@ -368,7 +380,8 @@ public class Mavlink {
                 msg.seq = seq++;
                 byte[] byteMsg = msg.encodePacket();
                 DatagramPacket sendPacket = new DatagramPacket(byteMsg, byteMsg.length, InetAddress.getByName("10.0.0.1"), 14556);
-                socket.send(sendPacket);
+                if(socket != null)
+                    socket.send(sendPacket);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -395,13 +408,22 @@ public class Mavlink {
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_ALTITUDE");
                     break;
                 case MAVLINK_MSG_ID_ATTITUDE:
+                    msg_attitude attitude = new msg_attitude();
+                    attitude.unpack(msg.payload);
+                    mMavlinkListener.attitude(attitude);
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_ATTITUDE");
                     break;
                 case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_SERVO_OUTPUT_RAW");
+                    msg_servo_output_raw servo_output_raw = new msg_servo_output_raw();
+                    servo_output_raw.unpack(msg.payload);
+                    mMavlinkListener.servo_output_raw(servo_output_raw);
                     break;
                 case MAVLINK_MSG_ID_SYS_STATUS:
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_SYS_STATUS");
+                    msg_sys_status sys_status = new msg_sys_status();
+                    sys_status.unpack(msg.payload);
+                    mMavlinkListener.sys_status(sys_status);
                     break;
                 case MAVLINK_MSG_ID_VFR_HUD:
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_VFR_HUD");
@@ -512,5 +534,9 @@ public class Mavlink {
         public void mode(PX4_MODE mode);
         public void connect(boolean isConnect);
         public void armed(boolean isArm);
+        public void sys_status(msg_sys_status sys_status);
+        public void servo_output_raw(msg_servo_output_raw servo_output_raw);
+        public void attitude(msg_attitude attitude);
+
     }
 }

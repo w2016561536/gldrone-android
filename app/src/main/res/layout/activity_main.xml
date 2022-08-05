@@ -90,13 +90,112 @@
         android:text="ARM CH6:1500" />
 
     <TextView
-        android:id="@+id/tv_connect"
+        android:id="@+id/tv_pwm1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_ch6"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="PWM1:0" />
+
+    <TextView
+        android:id="@+id/tv_pwm2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_pwm1"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="PWM2:0" />
+
+    <TextView
+        android:id="@+id/tv_pwm3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_pwm2"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="PWM3:0" />
+
+    <TextView
+        android:id="@+id/tv_pwm4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_pwm3"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="PWM4:0" />
+
+    <TextView
+        android:id="@+id/tv_bat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/tv_ch1"
+        android:text="3.70v   "
+        android:fontFamily="monospace" />
+
+    <TextView
+        android:id="@+id/tv_load"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_bat"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/tv_ch1"
+        android:text="100% "
+        android:fontFamily="monospace" />
+
+    <TextView
+        android:id="@+id/tv_rol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_load"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/tv_ch1"
+        android:text="ROL:0.0"
+        android:fontFamily="monospace" />
+
+    <TextView
+        android:id="@+id/tv_pit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_rol"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/tv_ch1"
+        android:text="PIT:0.0"
+        android:fontFamily="monospace" />
+
+    <TextView
+        android:id="@+id/tv_yaw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_pit"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/tv_ch1"
+        android:text="YAW:0.0"
+        android:fontFamily="monospace" />
+
+    <TextView
+        android:id="@+id/tv_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@+id/tv_bat"
         android:text="Disconnected"
         android:textColor="#FF1100" />
 
@@ -107,7 +206,7 @@
         android:layout_below="@+id/tv_connect"
         android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
-        android:layout_toEndOf="@+id/tv_ch1"
+        android:layout_toEndOf="@+id/tv_bat"
         android:text="Disarm"
         android:textColor="#FF1100" />
 
@@ -142,5 +241,14 @@
         android:layout_marginTop="6dp"
         android:layout_marginEnd="6dp"
         android:text="Disarm" />
+
+    <Button
+        android:id="@+id/bt_arm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="35dp"
+        android:text="ARM" />
 
 </RelativeLayout>

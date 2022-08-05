@@ -2,6 +2,7 @@ package com.gldz.gldrone;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -9,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -17,9 +19,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Parser;
+import com.MAVLink.common.msg_attitude;
+import com.MAVLink.common.msg_servo_output_raw;
+import com.MAVLink.common.msg_sys_status;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -49,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     Button bt_setting = null;
     Button bt_disarm = null;
+    Button bt_arm = null;
+
     TextView tv_ch1 = null;
     TextView tv_ch2 = null;
     TextView tv_ch3 = null;
@@ -58,12 +66,56 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView tv_mode = null;
     TextView tv_connect = null;
     TextView tv_arm = null;
+    TextView tv_bat = null;
+    TextView tv_load = null;
+    TextView tv_pwm1 = null;
+    TextView tv_pwm2 = null;
+    TextView tv_pwm3 = null;
+    TextView tv_pwm4 = null;
+    TextView tv_rol,tv_pit,tv_yaw;
+
     RockerView rv_left = null;
     RockerView rv_right = null;
 
     Mavlink mavlink;
 
     int flyMode = 0,flyModelast = -1;
+
+    /**
+     * 隐藏虚拟按键，并且全屏
+     */
+    public void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE;
+            decorView.setSystemUiVisibility(uiOptions);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+    }
+
+    /**
+     * 显示虚拟按键
+     */
+    public void showBottomUIMenu() {
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            //低版本sdk
+            View v1 = getWindow().getDecorView();
+            v1.setSystemUiVisibility(View.VISIBLE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +124,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         Window window = getWindow();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        int flag=WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        int flag = WindowManager.LayoutParams.FLAG_FULLSCREEN;
         window.setFlags(flag, flag);
+        hideBottomUIMenu();
 
         setContentView(R.layout.activity_main);
         // KEEP_SCREEN_ON
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
         tv_ch1 = (TextView)findViewById(R.id.tv_ch1);
         tv_ch2 = (TextView)findViewById(R.id.tv_ch2);
@@ -88,10 +142,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tv_mode = (TextView)findViewById(R.id.tv_mode);
         tv_connect = (TextView)findViewById(R.id.tv_connect);
         tv_arm = (TextView)findViewById(R.id.tv_arm);
-        bt_disarm = (Button)findViewById(R.id.bt_disarm);
+        tv_bat = (TextView)findViewById(R.id.tv_bat);
+        tv_load = (TextView)findViewById(R.id.tv_load);
+        tv_pwm1 = (TextView)findViewById(R.id.tv_pwm1);
+        tv_pwm2 = (TextView)findViewById(R.id.tv_pwm2);
+        tv_pwm3 = (TextView)findViewById(R.id.tv_pwm3);
+        tv_pwm4 = (TextView)findViewById(R.id.tv_pwm4);
+
+        tv_rol = (TextView)findViewById(R.id.tv_rol);
+        tv_pit = (TextView)findViewById(R.id.tv_pit);
+        tv_yaw = (TextView)findViewById(R.id.tv_yaw);
+
+
+
         bt_setting = (Button) findViewById(R.id.bt_setting);
+        bt_disarm = (Button)findViewById(R.id.bt_disarm);
+        bt_arm = (Button) findViewById(R.id.bt_arm);
 
         mavlink = new Mavlink();
+        if(!mavlink.socketInitSuccess)
+        {
+            Toast.makeText(getApplicationContext(), "Socket Creat Fail. Check WIFI and Try.",
+                    Toast.LENGTH_LONG).show();
+        }
+
         mavlink.setMavlinkListener(new Mavlink.MavlinkListener() {
             @Override
             public void mode(Mavlink.PX4_MODE mode) {
@@ -130,12 +204,58 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         {
                             tv_arm.setText("Arm");
                             tv_arm.setTextColor(Color.BLUE);
+                            bt_arm.setText("DISARM");
                         }
                         else
                         {
                             tv_arm.setText("Disarm");
                             tv_arm.setTextColor(Color.RED);
+                            bt_arm.setText("ARM");
                         }
+
+                    }
+                });
+            }
+
+            @Override
+            public void sys_status(msg_sys_status sys_status) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+
+                        @SuppressLint("DefaultLocale") String bat = String.format("%.2f", (float)sys_status.voltage_battery/1000).toString()+"v   ";
+                        @SuppressLint("DefaultLocale") String load = String.format("%.0f", (float)sys_status.load/10).toString()+"%";
+                        tv_bat.setText(bat);
+                        tv_load.setText(load);
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void servo_output_raw(msg_servo_output_raw servo_output_raw) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+
+                        tv_pwm1.setText("PWM1:"+ String.valueOf(servo_output_raw.servo1_raw));
+                        tv_pwm2.setText("PWM2:"+ String.valueOf(servo_output_raw.servo2_raw));
+                        tv_pwm3.setText("PWM3:"+ String.valueOf(servo_output_raw.servo3_raw));
+                        tv_pwm4.setText("PWM4:"+ String.valueOf(servo_output_raw.servo4_raw));
+                    }
+                });
+            }
+
+            @Override
+            public void attitude(msg_attitude attitude) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        String roll = String.format("%.2f", attitude.roll*180/3.1415926).toString();
+                        String pitch = String.format("%.2f", attitude.pitch*180/3.1415926).toString();
+                        String yaw = String.format("%.2f", attitude.yaw*180/3.1415926).toString();
+
+                        tv_rol.setText("ROL:"+ roll);
+                        tv_pit.setText("PIT:"+ pitch);
+                        tv_yaw.setText("YAW:"+ yaw);
 
                     }
                 });
@@ -219,15 +339,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
 
-        tv_arm.setOnClickListener(new View.OnClickListener() {
+        bt_arm.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
 
-                ch[5] = 2000;
+                if(mavlink.is_armed)
+                {
+                    ch[5] = 1000;
+                }else{
+                    ch[5] = 2000;
+                }
+
                 tv_ch6.setText("ARM CH6:"+String.valueOf(ch[5]));
-                //mavlink.sendMsgDisarm(1);
 
             }
         });
@@ -252,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mavlink.sendMsgRC(ch[0],ch[1],ch[2],ch[3],ch[4],ch[5]);
             }
         };
-        mTimer.schedule(mTimerTask, 5,5);
+        mTimer.schedule(mTimerTask, 10,10);
 
 //        Thread t1 = new Thread(() -> {
 //            try {
