@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Actuator configuration, used to change a setting on an actuator. Component information metadata can be used to know which outputs support which commands.
  */
 public class ACTUATOR_CONFIGURATION {
@@ -18,4 +18,3 @@ public class ACTUATOR_CONFIGURATION {
    public static final int ACTUATOR_CONFIGURATION_SPIN_DIRECTION2 = 5; /* Permanently set the actuator (ESC) to spin direction 2 (opposite of direction 1). | */
    public static final int ACTUATOR_CONFIGURATION_ENUM_END = 6; /*  | */
 }
-            

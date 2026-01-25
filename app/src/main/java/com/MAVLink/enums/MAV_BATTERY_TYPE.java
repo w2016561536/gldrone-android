@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Enumeration of battery types
  */
 public class MAV_BATTERY_TYPE {
@@ -17,4 +17,3 @@ public class MAV_BATTERY_TYPE {
    public static final int MAV_BATTERY_TYPE_NIMH = 4; /* Nickel metal hydride battery | */
    public static final int MAV_BATTERY_TYPE_ENUM_END = 5; /*  | */
 }
-            

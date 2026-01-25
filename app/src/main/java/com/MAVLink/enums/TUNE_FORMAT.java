@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Tune formats (used for vehicle buzzer/tone generation).
  */
 public class TUNE_FORMAT {
@@ -14,4 +14,3 @@ public class TUNE_FORMAT {
    public static final int TUNE_FORMAT_MML_MODERN = 2; /* Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML. | */
    public static final int TUNE_FORMAT_ENUM_END = 3; /*  | */
 }
-            

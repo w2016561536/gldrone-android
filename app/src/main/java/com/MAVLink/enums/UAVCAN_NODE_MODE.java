@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Generalized UAVCAN node mode
  */
 public class UAVCAN_NODE_MODE {
@@ -17,4 +17,3 @@ public class UAVCAN_NODE_MODE {
    public static final int UAVCAN_NODE_MODE_OFFLINE = 7; /* The node is no longer available online. | */
    public static final int UAVCAN_NODE_MODE_ENUM_END = 8; /*  | */
 }
-            

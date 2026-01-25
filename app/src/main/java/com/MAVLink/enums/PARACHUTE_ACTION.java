@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Parachute actions. Trigger release and enable/disable auto-release.
  */
 public class PARACHUTE_ACTION {
@@ -15,4 +15,3 @@ public class PARACHUTE_ACTION {
    public static final int PARACHUTE_RELEASE = 2; /* Release parachute and kill motors. | */
    public static final int PARACHUTE_ACTION_ENUM_END = 3; /*  | */
 }
-            

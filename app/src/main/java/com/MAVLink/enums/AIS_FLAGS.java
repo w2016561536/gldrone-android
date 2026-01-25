@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data in the other message fields. When set, the data is valid.
  */
 public class AIS_FLAGS {
@@ -25,4 +25,3 @@ public class AIS_FLAGS {
    public static final int AIS_FLAGS_VALID_NAME = 4096; /*  | */
    public static final int AIS_FLAGS_ENUM_END = 4097; /*  | */
 }
-            

@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * 
  */
 public class MAV_ODID_UA_TYPE {
@@ -28,4 +28,3 @@ public class MAV_ODID_UA_TYPE {
    public static final int MAV_ODID_UA_TYPE_OTHER = 15; /* Other type of aircraft not listed earlier. | */
    public static final int MAV_ODID_UA_TYPE_ENUM_END = 16; /*  | */
 }
-            

@@ -6,11 +6,10 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Flags in the HIGHRES_IMU message indicate which fields have updated since the last message
  */
 public class HIGHRES_IMU_UPDATED_FLAGS {
-   public static final int HIGHRES_IMU_UPDATED_NONE = 0; /* None of the fields in HIGHRES_IMU have been updated | */
    public static final int HIGHRES_IMU_UPDATED_XACC = 1; /* The value in the xacc field has been updated | */
    public static final int HIGHRES_IMU_UPDATED_YACC = 2; /* The value in the yacc field has been updated | */
    public static final int HIGHRES_IMU_UPDATED_ZACC = 4; /* The value in the zacc field has been updated since | */
@@ -24,7 +23,5 @@ public class HIGHRES_IMU_UPDATED_FLAGS {
    public static final int HIGHRES_IMU_UPDATED_DIFF_PRESSURE = 1024; /* The value in the diff_pressure field has been updated | */
    public static final int HIGHRES_IMU_UPDATED_PRESSURE_ALT = 2048; /* The value in the pressure_alt field has been updated | */
    public static final int HIGHRES_IMU_UPDATED_TEMPERATURE = 4096; /* The value in the temperature field has been updated | */
-   public static final int HIGHRES_IMU_UPDATED_ALL = 65535; /* All fields in HIGHRES_IMU have been updated. | */
-   public static final int HIGHRES_IMU_UPDATED_FLAGS_ENUM_END = 65536; /*  | */
+   public static final int HIGHRES_IMU_UPDATED_FLAGS_ENUM_END = 4097; /*  | */
 }
-            

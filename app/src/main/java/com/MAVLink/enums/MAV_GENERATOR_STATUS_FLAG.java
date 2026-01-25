@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Flags to report status/failure cases for a power generator (used in GENERATOR_STATUS). Note that FAULTS are conditions that cause the generator to fail. Warnings are conditions that require attention before the next use (they indicate the system is not operating properly).
  */
 public class MAV_GENERATOR_STATUS_FLAG {
@@ -35,4 +35,3 @@ public class MAV_GENERATOR_STATUS_FLAG {
    public static final int MAV_GENERATOR_STATUS_FLAG_IDLE = 4194304; /* Generator is idle. | */
    public static final int MAV_GENERATOR_STATUS_FLAG_ENUM_END = 4194305; /*  | */
 }
-            

@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Sequence that motors are tested when using MAV_CMD_DO_MOTOR_TEST.
  */
 public class MOTOR_TEST_ORDER {
@@ -15,4 +15,3 @@ public class MOTOR_TEST_ORDER {
    public static final int MOTOR_TEST_ORDER_BOARD = 2; /* Motor numbers are specified as the output as labeled on the board. | */
    public static final int MOTOR_TEST_ORDER_ENUM_END = 3; /*  | */
 }
-            

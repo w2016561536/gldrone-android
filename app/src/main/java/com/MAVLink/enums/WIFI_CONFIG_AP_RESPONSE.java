@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Possible responses from a WIFI_CONFIG_AP message.
  */
 public class WIFI_CONFIG_AP_RESPONSE {
@@ -18,4 +18,3 @@ public class WIFI_CONFIG_AP_RESPONSE {
    public static final int WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR = 5; /* Invalid Password. | */
    public static final int WIFI_CONFIG_AP_RESPONSE_ENUM_END = 6; /*  | */
 }
-            

@@ -9,66 +9,131 @@ package com.MAVLink.common;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Messages.MAVLinkPayload;
-        
+import com.MAVLink.Messages.Units;
+import com.MAVLink.Messages.Description;
+
 /**
- * This message provides an API for manually controlling the vehicle using standard joystick axes nomenclature, along with a joystick-like input device. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask
+ * Manual (joystick) control message.
+        This message represents movement axes and button using standard joystick axes nomenclature. Unused axes can be disabled and buttons states are transmitted as individual on/off bits of a bitmask. For more information see https://mavlink.io/en/manual_control.html
  */
 public class msg_manual_control extends MAVLinkMessage {
 
     public static final int MAVLINK_MSG_ID_MANUAL_CONTROL = 69;
-    public static final int MAVLINK_MSG_LENGTH = 18;
+    public static final int MAVLINK_MSG_LENGTH = 30;
     private static final long serialVersionUID = MAVLINK_MSG_ID_MANUAL_CONTROL;
 
-      
+    
     /**
      * X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.
      */
+    @Description("X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle.")
+    @Units("")
     public short x;
-      
+    
     /**
      * Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.
      */
+    @Description("Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle.")
+    @Units("")
     public short y;
-      
+    
     /**
      * Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust.
      */
+    @Description("Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust.")
+    @Units("")
     public short z;
-      
+    
     /**
-     * R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle.
+     * R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with clockwise being 1000 and counter-clockwise being -1000, and the yaw of a vehicle.
      */
+    @Description("R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with clockwise being 1000 and counter-clockwise being -1000, and the yaw of a vehicle.")
+    @Units("")
     public short r;
-      
+    
     /**
      * A bitfield corresponding to the joystick buttons' 0-15 current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.
      */
+    @Description("A bitfield corresponding to the joystick buttons' 0-15 current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1.")
+    @Units("")
     public int buttons;
-      
+    
     /**
      * The system to be controlled.
      */
+    @Description("The system to be controlled.")
+    @Units("")
     public short target;
-      
+    
     /**
      * A bitfield corresponding to the joystick buttons' 16-31 current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 16.
      */
+    @Description("A bitfield corresponding to the joystick buttons' 16-31 current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 16.")
+    @Units("")
     public int buttons2;
-      
+    
     /**
-     * Set bits to 1 to indicate which of the following extension fields contain valid data: bit 0: pitch, bit 1: roll.
+     * Set bits to 1 to indicate which of the following extension fields contain valid data: bit 0: pitch, bit 1: roll, bit 2: aux1, bit 3: aux2, bit 4: aux3, bit 5: aux4, bit 6: aux5, bit 7: aux6
      */
+    @Description("Set bits to 1 to indicate which of the following extension fields contain valid data: bit 0: pitch, bit 1: roll, bit 2: aux1, bit 3: aux2, bit 4: aux3, bit 5: aux4, bit 6: aux5, bit 7: aux6")
+    @Units("")
     public short enabled_extensions;
-      
+    
     /**
      * Pitch-only-axis, normalized to the range [-1000,1000]. Generally corresponds to pitch on vehicles with additional degrees of freedom. Valid if bit 0 of enabled_extensions field is set. Set to 0 if invalid.
      */
+    @Description("Pitch-only-axis, normalized to the range [-1000,1000]. Generally corresponds to pitch on vehicles with additional degrees of freedom. Valid if bit 0 of enabled_extensions field is set. Set to 0 if invalid.")
+    @Units("")
     public short s;
-      
+    
     /**
      * Roll-only-axis, normalized to the range [-1000,1000]. Generally corresponds to roll on vehicles with additional degrees of freedom. Valid if bit 1 of enabled_extensions field is set. Set to 0 if invalid.
      */
+    @Description("Roll-only-axis, normalized to the range [-1000,1000]. Generally corresponds to roll on vehicles with additional degrees of freedom. Valid if bit 1 of enabled_extensions field is set. Set to 0 if invalid.")
+    @Units("")
     public short t;
+    
+    /**
+     * Aux continuous input field 1. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 2 of enabled_extensions field is set. 0 if bit 2 is unset.
+     */
+    @Description("Aux continuous input field 1. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 2 of enabled_extensions field is set. 0 if bit 2 is unset.")
+    @Units("")
+    public short aux1;
+    
+    /**
+     * Aux continuous input field 2. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 3 of enabled_extensions field is set. 0 if bit 3 is unset.
+     */
+    @Description("Aux continuous input field 2. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 3 of enabled_extensions field is set. 0 if bit 3 is unset.")
+    @Units("")
+    public short aux2;
+    
+    /**
+     * Aux continuous input field 3. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 4 of enabled_extensions field is set. 0 if bit 4 is unset.
+     */
+    @Description("Aux continuous input field 3. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 4 of enabled_extensions field is set. 0 if bit 4 is unset.")
+    @Units("")
+    public short aux3;
+    
+    /**
+     * Aux continuous input field 4. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 5 of enabled_extensions field is set. 0 if bit 5 is unset.
+     */
+    @Description("Aux continuous input field 4. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 5 of enabled_extensions field is set. 0 if bit 5 is unset.")
+    @Units("")
+    public short aux4;
+    
+    /**
+     * Aux continuous input field 5. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 6 of enabled_extensions field is set. 0 if bit 6 is unset.
+     */
+    @Description("Aux continuous input field 5. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 6 of enabled_extensions field is set. 0 if bit 6 is unset.")
+    @Units("")
+    public short aux5;
+    
+    /**
+     * Aux continuous input field 6. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 7 of enabled_extensions field is set. 0 if bit 7 is unset.
+     */
+    @Description("Aux continuous input field 6. Normalized in the range [-1000,1000]. Purpose defined by recipient. Valid data if bit 7 of enabled_extensions field is set. 0 if bit 7 is unset.")
+    @Units("")
+    public short aux6;
     
 
     /**
@@ -81,7 +146,7 @@ public class msg_manual_control extends MAVLinkMessage {
         packet.sysid = sysid;
         packet.compid = compid;
         packet.msgid = MAVLINK_MSG_ID_MANUAL_CONTROL;
-        
+
         packet.payload.putShort(x);
         packet.payload.putShort(y);
         packet.payload.putShort(z);
@@ -94,6 +159,12 @@ public class msg_manual_control extends MAVLinkMessage {
              packet.payload.putUnsignedByte(enabled_extensions);
              packet.payload.putShort(s);
              packet.payload.putShort(t);
+             packet.payload.putShort(aux1);
+             packet.payload.putShort(aux2);
+             packet.payload.putShort(aux3);
+             packet.payload.putShort(aux4);
+             packet.payload.putShort(aux5);
+             packet.payload.putShort(aux6);
             
         }
         return packet;
@@ -107,7 +178,7 @@ public class msg_manual_control extends MAVLinkMessage {
     @Override
     public void unpack(MAVLinkPayload payload) {
         payload.resetIndex();
-        
+
         this.x = payload.getShort();
         this.y = payload.getShort();
         this.z = payload.getShort();
@@ -120,6 +191,12 @@ public class msg_manual_control extends MAVLinkMessage {
              this.enabled_extensions = payload.getUnsignedByte();
              this.s = payload.getShort();
              this.t = payload.getShort();
+             this.aux1 = payload.getShort();
+             this.aux2 = payload.getShort();
+             this.aux3 = payload.getShort();
+             this.aux4 = payload.getShort();
+             this.aux5 = payload.getShort();
+             this.aux6 = payload.getShort();
             
         }
     }
@@ -130,11 +207,11 @@ public class msg_manual_control extends MAVLinkMessage {
     public msg_manual_control() {
         this.msgid = MAVLINK_MSG_ID_MANUAL_CONTROL;
     }
-    
+
     /**
      * Constructor for a new message, initializes msgid and all payload variables
      */
-    public msg_manual_control( short x, short y, short z, short r, int buttons, short target, int buttons2, short enabled_extensions, short s, short t) {
+    public msg_manual_control( short x, short y, short z, short r, int buttons, short target, int buttons2, short enabled_extensions, short s, short t, short aux1, short aux2, short aux3, short aux4, short aux5, short aux6) {
         this.msgid = MAVLINK_MSG_ID_MANUAL_CONTROL;
 
         this.x = x;
@@ -147,13 +224,19 @@ public class msg_manual_control extends MAVLinkMessage {
         this.enabled_extensions = enabled_extensions;
         this.s = s;
         this.t = t;
+        this.aux1 = aux1;
+        this.aux2 = aux2;
+        this.aux3 = aux3;
+        this.aux4 = aux4;
+        this.aux5 = aux5;
+        this.aux6 = aux6;
         
     }
-    
+
     /**
      * Constructor for a new message, initializes everything
      */
-    public msg_manual_control( short x, short y, short z, short r, int buttons, short target, int buttons2, short enabled_extensions, short s, short t, int sysid, int compid, boolean isMavlink2) {
+    public msg_manual_control( short x, short y, short z, short r, int buttons, short target, int buttons2, short enabled_extensions, short s, short t, short aux1, short aux2, short aux3, short aux4, short aux5, short aux6, int sysid, int compid, boolean isMavlink2) {
         this.msgid = MAVLINK_MSG_ID_MANUAL_CONTROL;
         this.sysid = sysid;
         this.compid = compid;
@@ -169,6 +252,12 @@ public class msg_manual_control extends MAVLinkMessage {
         this.enabled_extensions = enabled_extensions;
         this.s = s;
         this.t = t;
+        this.aux1 = aux1;
+        this.aux2 = aux2;
+        this.aux3 = aux3;
+        this.aux4 = aux4;
+        this.aux5 = aux5;
+        this.aux6 = aux6;
         
     }
 
@@ -179,22 +268,22 @@ public class msg_manual_control extends MAVLinkMessage {
      */
     public msg_manual_control(MAVLinkPacket mavLinkPacket) {
         this.msgid = MAVLINK_MSG_ID_MANUAL_CONTROL;
-        
+
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
         this.isMavlink2 = mavLinkPacket.isMavlink2;
         unpack(mavLinkPacket.payload);
     }
 
-                        
+                                    
     /**
      * Returns a string with the MSG name and data
      */
     @Override
     public String toString() {
-        return "MAVLINK_MSG_ID_MANUAL_CONTROL - sysid:"+sysid+" compid:"+compid+" x:"+x+" y:"+y+" z:"+z+" r:"+r+" buttons:"+buttons+" target:"+target+" buttons2:"+buttons2+" enabled_extensions:"+enabled_extensions+" s:"+s+" t:"+t+"";
+        return "MAVLINK_MSG_ID_MANUAL_CONTROL - sysid:"+sysid+" compid:"+compid+" x:"+x+" y:"+y+" z:"+z+" r:"+r+" buttons:"+buttons+" target:"+target+" buttons2:"+buttons2+" enabled_extensions:"+enabled_extensions+" s:"+s+" t:"+t+" aux1:"+aux1+" aux2:"+aux2+" aux3:"+aux3+" aux4:"+aux4+" aux5:"+aux5+" aux6:"+aux6+"";
     }
-    
+
     /**
      * Returns a human-readable string of the name of the message
      */

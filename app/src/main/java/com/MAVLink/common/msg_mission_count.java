@@ -9,36 +9,53 @@ package com.MAVLink.common;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Messages.MAVLinkPayload;
-        
+import com.MAVLink.Messages.Units;
+import com.MAVLink.Messages.Description;
+
 /**
  * This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of waypoints.
  */
 public class msg_mission_count extends MAVLinkMessage {
 
     public static final int MAVLINK_MSG_ID_MISSION_COUNT = 44;
-    public static final int MAVLINK_MSG_LENGTH = 5;
+    public static final int MAVLINK_MSG_LENGTH = 9;
     private static final long serialVersionUID = MAVLINK_MSG_ID_MISSION_COUNT;
 
-      
+    
     /**
      * Number of mission items in the sequence
      */
+    @Description("Number of mission items in the sequence")
+    @Units("")
     public int count;
-      
+    
     /**
      * System ID
      */
+    @Description("System ID")
+    @Units("")
     public short target_system;
-      
+    
     /**
      * Component ID
      */
+    @Description("Component ID")
+    @Units("")
     public short target_component;
-      
+    
     /**
      * Mission type.
      */
+    @Description("Mission type.")
+    @Units("")
     public short mission_type;
+    
+    /**
+     * Id of current on-vehicle mission, fence, or rally point plan (on download from vehicle).         This field is used when downloading a plan from a vehicle to a GCS.         0 on upload to the vehicle from GCS.         0 if plan ids are not supported.         The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.         The ids are recalculated by the vehicle when any part of the on-vehicle plan changes (when a new plan is uploaded, the vehicle returns the new id to the GCS in MISSION_ACK).       
+     */
+    @Description("Id of current on-vehicle mission, fence, or rally point plan (on download from vehicle).         This field is used when downloading a plan from a vehicle to a GCS.         0 on upload to the vehicle from GCS.         0 if plan ids are not supported.         The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.         The ids are recalculated by the vehicle when any part of the on-vehicle plan changes (when a new plan is uploaded, the vehicle returns the new id to the GCS in MISSION_ACK).       ")
+    @Units("")
+    public long opaque_id;
     
 
     /**
@@ -51,13 +68,14 @@ public class msg_mission_count extends MAVLinkMessage {
         packet.sysid = sysid;
         packet.compid = compid;
         packet.msgid = MAVLINK_MSG_ID_MISSION_COUNT;
-        
+
         packet.payload.putUnsignedShort(count);
         packet.payload.putUnsignedByte(target_system);
         packet.payload.putUnsignedByte(target_component);
         
         if (isMavlink2) {
              packet.payload.putUnsignedByte(mission_type);
+             packet.payload.putUnsignedInt(opaque_id);
             
         }
         return packet;
@@ -71,13 +89,14 @@ public class msg_mission_count extends MAVLinkMessage {
     @Override
     public void unpack(MAVLinkPayload payload) {
         payload.resetIndex();
-        
+
         this.count = payload.getUnsignedShort();
         this.target_system = payload.getUnsignedByte();
         this.target_component = payload.getUnsignedByte();
         
         if (isMavlink2) {
              this.mission_type = payload.getUnsignedByte();
+             this.opaque_id = payload.getUnsignedInt();
             
         }
     }
@@ -88,24 +107,25 @@ public class msg_mission_count extends MAVLinkMessage {
     public msg_mission_count() {
         this.msgid = MAVLINK_MSG_ID_MISSION_COUNT;
     }
-    
+
     /**
      * Constructor for a new message, initializes msgid and all payload variables
      */
-    public msg_mission_count( int count, short target_system, short target_component, short mission_type) {
+    public msg_mission_count( int count, short target_system, short target_component, short mission_type, long opaque_id) {
         this.msgid = MAVLINK_MSG_ID_MISSION_COUNT;
 
         this.count = count;
         this.target_system = target_system;
         this.target_component = target_component;
         this.mission_type = mission_type;
+        this.opaque_id = opaque_id;
         
     }
-    
+
     /**
      * Constructor for a new message, initializes everything
      */
-    public msg_mission_count( int count, short target_system, short target_component, short mission_type, int sysid, int compid, boolean isMavlink2) {
+    public msg_mission_count( int count, short target_system, short target_component, short mission_type, long opaque_id, int sysid, int compid, boolean isMavlink2) {
         this.msgid = MAVLINK_MSG_ID_MISSION_COUNT;
         this.sysid = sysid;
         this.compid = compid;
@@ -115,6 +135,7 @@ public class msg_mission_count extends MAVLinkMessage {
         this.target_system = target_system;
         this.target_component = target_component;
         this.mission_type = mission_type;
+        this.opaque_id = opaque_id;
         
     }
 
@@ -125,22 +146,22 @@ public class msg_mission_count extends MAVLinkMessage {
      */
     public msg_mission_count(MAVLinkPacket mavLinkPacket) {
         this.msgid = MAVLINK_MSG_ID_MISSION_COUNT;
-        
+
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
         this.isMavlink2 = mavLinkPacket.isMavlink2;
         unpack(mavLinkPacket.payload);
     }
 
-            
+              
     /**
      * Returns a string with the MSG name and data
      */
     @Override
     public String toString() {
-        return "MAVLINK_MSG_ID_MISSION_COUNT - sysid:"+sysid+" compid:"+compid+" count:"+count+" target_system:"+target_system+" target_component:"+target_component+" mission_type:"+mission_type+"";
+        return "MAVLINK_MSG_ID_MISSION_COUNT - sysid:"+sysid+" compid:"+compid+" count:"+count+" target_system:"+target_system+" target_component:"+target_component+" mission_type:"+mission_type+" opaque_id:"+opaque_id+"";
     }
-    
+
     /**
      * Returns a human-readable string of the name of the message
      */

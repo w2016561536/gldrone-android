@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * SERIAL_CONTROL device types
  */
 public class SERIAL_CONTROL_DEV {
@@ -27,4 +27,3 @@ public class SERIAL_CONTROL_DEV {
    public static final int SERIAL_CONTROL_SERIAL9 = 109; /* SERIAL9 | */
    public static final int SERIAL_CONTROL_DEV_ENUM_END = 110; /*  | */
 }
-            

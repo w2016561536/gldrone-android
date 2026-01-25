@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Power supply status flags (bitmask)
  */
 public class MAV_POWER_STATUS {
@@ -18,4 +18,3 @@ public class MAV_POWER_STATUS {
    public static final int MAV_POWER_STATUS_CHANGED = 32; /* Power status has changed since boot | */
    public static final int MAV_POWER_STATUS_ENUM_END = 33; /*  | */
 }
-            

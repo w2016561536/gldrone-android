@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * WiFi Mode.
  */
 public class WIFI_CONFIG_AP_MODE {
@@ -16,4 +16,3 @@ public class WIFI_CONFIG_AP_MODE {
    public static final int WIFI_CONFIG_AP_MODE_DISABLED = 3; /* WiFi disabled. | */
    public static final int WIFI_CONFIG_AP_MODE_ENUM_END = 4; /*  | */
 }
-            

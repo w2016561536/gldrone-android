@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Flags to indicate usage for a particular storage (see STORAGE_INFORMATION.storage_usage and MAV_CMD_SET_STORAGE_USAGE).
  */
 public class STORAGE_USAGE_FLAG {
@@ -16,4 +16,3 @@ public class STORAGE_USAGE_FLAG {
    public static final int STORAGE_USAGE_FLAG_LOGS = 8; /* Storage for saving logs. | */
    public static final int STORAGE_USAGE_FLAG_ENUM_END = 9; /*  | */
 }
-            

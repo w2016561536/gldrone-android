@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b00000000 indicates that none of the setpoint dimensions should be ignored.
  */
 public class ATTITUDE_TARGET_TYPEMASK {
@@ -18,4 +18,3 @@ public class ATTITUDE_TARGET_TYPEMASK {
    public static final int ATTITUDE_TARGET_TYPEMASK_ATTITUDE_IGNORE = 128; /* Ignore attitude | */
    public static final int ATTITUDE_TARGET_TYPEMASK_ENUM_END = 129; /*  | */
 }
-            

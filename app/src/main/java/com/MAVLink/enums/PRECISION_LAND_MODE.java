@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Precision land modes (used in MAV_CMD_NAV_LAND).
  */
 public class PRECISION_LAND_MODE {
@@ -15,4 +15,3 @@ public class PRECISION_LAND_MODE {
    public static final int PRECISION_LAND_MODE_REQUIRED = 2; /* Use precision landing, searching for beacon if not found when land command accepted (land normally if beacon cannot be found). | */
    public static final int PRECISION_LAND_MODE_ENUM_END = 3; /*  | */
 }
-            

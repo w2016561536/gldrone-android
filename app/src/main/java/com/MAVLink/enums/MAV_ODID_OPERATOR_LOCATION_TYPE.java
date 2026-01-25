@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * 
  */
 public class MAV_ODID_OPERATOR_LOCATION_TYPE {
@@ -15,4 +15,3 @@ public class MAV_ODID_OPERATOR_LOCATION_TYPE {
    public static final int MAV_ODID_OPERATOR_LOCATION_TYPE_FIXED = 2; /* The location/altitude of the operator are fixed values. | */
    public static final int MAV_ODID_OPERATOR_LOCATION_TYPE_ENUM_END = 3; /*  | */
 }
-            

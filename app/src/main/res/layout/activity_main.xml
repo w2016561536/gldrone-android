@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -87,7 +88,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:fontFamily="monospace"
-        android:text="ARM CH6:1500" />
+        android:text="ARM CH6:1500"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_pwm1"
@@ -98,7 +100,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:fontFamily="monospace"
-        android:text="PWM1:0" />
+        android:text="PWM1:0"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_pwm2"
@@ -109,7 +112,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:fontFamily="monospace"
-        android:text="PWM2:0" />
+        android:text="PWM2:0"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_pwm3"
@@ -120,7 +124,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:fontFamily="monospace"
-        android:text="PWM3:0" />
+        android:text="PWM3:0"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_pwm4"
@@ -131,7 +136,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:fontFamily="monospace"
-        android:text="PWM4:0" />
+        android:text="PWM4:0"
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_bat"
@@ -237,9 +243,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/bt_setting"
-        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="6dp"
-        android:layout_marginEnd="6dp"
         android:text="Disarm" />
 
     <Button

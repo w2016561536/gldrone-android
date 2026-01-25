@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Flags to indicate the type of storage.
  */
 public class STORAGE_TYPE {
@@ -21,4 +21,3 @@ public class STORAGE_TYPE {
    public static final int STORAGE_TYPE_OTHER = 254; /* Storage type is other, not listed type. | */
    public static final int STORAGE_TYPE_ENUM_END = 255; /*  | */
 }
-            

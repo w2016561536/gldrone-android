@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * MAV FTP opcodes: https://mavlink.io/en/services/ftp.html
  */
 public class MAV_FTP_OPCODE {
@@ -30,4 +30,3 @@ public class MAV_FTP_OPCODE {
    public static final int MAV_FTP_OPCODE_NAK = 129; /* NAK: NAK response | */
    public static final int MAV_FTP_OPCODE_ENUM_END = 130; /*  | */
 }
-            

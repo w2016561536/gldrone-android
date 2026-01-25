@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Cellular network radio type
  */
 public class CELLULAR_NETWORK_RADIO_TYPE {
@@ -17,4 +17,3 @@ public class CELLULAR_NETWORK_RADIO_TYPE {
    public static final int CELLULAR_NETWORK_RADIO_TYPE_LTE = 4; /*  | */
    public static final int CELLULAR_NETWORK_RADIO_TYPE_ENUM_END = 5; /*  | */
 }
-            

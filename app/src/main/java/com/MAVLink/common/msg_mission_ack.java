@@ -9,36 +9,53 @@ package com.MAVLink.common;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Messages.MAVLinkPayload;
-        
+import com.MAVLink.Messages.Units;
+import com.MAVLink.Messages.Description;
+
 /**
  * Acknowledgment message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).
  */
 public class msg_mission_ack extends MAVLinkMessage {
 
     public static final int MAVLINK_MSG_ID_MISSION_ACK = 47;
-    public static final int MAVLINK_MSG_LENGTH = 4;
+    public static final int MAVLINK_MSG_LENGTH = 8;
     private static final long serialVersionUID = MAVLINK_MSG_ID_MISSION_ACK;
 
-      
+    
     /**
      * System ID
      */
+    @Description("System ID")
+    @Units("")
     public short target_system;
-      
+    
     /**
      * Component ID
      */
+    @Description("Component ID")
+    @Units("")
     public short target_component;
-      
+    
     /**
      * Mission result.
      */
+    @Description("Mission result.")
+    @Units("")
     public short type;
-      
+    
     /**
      * Mission type.
      */
+    @Description("Mission type.")
+    @Units("")
     public short mission_type;
+    
+    /**
+     * Id of new on-vehicle mission, fence, or rally point plan (on upload to vehicle).         The id is calculated and returned by a vehicle when a new plan is uploaded by a GCS.         The only requirement on the id is that it must change when there is any change to the on-vehicle plan type (there is no requirement that the id be globally unique).         0 on download from the vehicle to the GCS (on download the ID is set in MISSION_COUNT).         0 if plan ids are not supported.         The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.       
+     */
+    @Description("Id of new on-vehicle mission, fence, or rally point plan (on upload to vehicle).         The id is calculated and returned by a vehicle when a new plan is uploaded by a GCS.         The only requirement on the id is that it must change when there is any change to the on-vehicle plan type (there is no requirement that the id be globally unique).         0 on download from the vehicle to the GCS (on download the ID is set in MISSION_COUNT).         0 if plan ids are not supported.         The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded.       ")
+    @Units("")
+    public long opaque_id;
     
 
     /**
@@ -51,13 +68,14 @@ public class msg_mission_ack extends MAVLinkMessage {
         packet.sysid = sysid;
         packet.compid = compid;
         packet.msgid = MAVLINK_MSG_ID_MISSION_ACK;
-        
+
         packet.payload.putUnsignedByte(target_system);
         packet.payload.putUnsignedByte(target_component);
         packet.payload.putUnsignedByte(type);
         
         if (isMavlink2) {
              packet.payload.putUnsignedByte(mission_type);
+             packet.payload.putUnsignedInt(opaque_id);
             
         }
         return packet;
@@ -71,13 +89,14 @@ public class msg_mission_ack extends MAVLinkMessage {
     @Override
     public void unpack(MAVLinkPayload payload) {
         payload.resetIndex();
-        
+
         this.target_system = payload.getUnsignedByte();
         this.target_component = payload.getUnsignedByte();
         this.type = payload.getUnsignedByte();
         
         if (isMavlink2) {
              this.mission_type = payload.getUnsignedByte();
+             this.opaque_id = payload.getUnsignedInt();
             
         }
     }
@@ -88,24 +107,25 @@ public class msg_mission_ack extends MAVLinkMessage {
     public msg_mission_ack() {
         this.msgid = MAVLINK_MSG_ID_MISSION_ACK;
     }
-    
+
     /**
      * Constructor for a new message, initializes msgid and all payload variables
      */
-    public msg_mission_ack( short target_system, short target_component, short type, short mission_type) {
+    public msg_mission_ack( short target_system, short target_component, short type, short mission_type, long opaque_id) {
         this.msgid = MAVLINK_MSG_ID_MISSION_ACK;
 
         this.target_system = target_system;
         this.target_component = target_component;
         this.type = type;
         this.mission_type = mission_type;
+        this.opaque_id = opaque_id;
         
     }
-    
+
     /**
      * Constructor for a new message, initializes everything
      */
-    public msg_mission_ack( short target_system, short target_component, short type, short mission_type, int sysid, int compid, boolean isMavlink2) {
+    public msg_mission_ack( short target_system, short target_component, short type, short mission_type, long opaque_id, int sysid, int compid, boolean isMavlink2) {
         this.msgid = MAVLINK_MSG_ID_MISSION_ACK;
         this.sysid = sysid;
         this.compid = compid;
@@ -115,6 +135,7 @@ public class msg_mission_ack extends MAVLinkMessage {
         this.target_component = target_component;
         this.type = type;
         this.mission_type = mission_type;
+        this.opaque_id = opaque_id;
         
     }
 
@@ -125,22 +146,22 @@ public class msg_mission_ack extends MAVLinkMessage {
      */
     public msg_mission_ack(MAVLinkPacket mavLinkPacket) {
         this.msgid = MAVLINK_MSG_ID_MISSION_ACK;
-        
+
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
         this.isMavlink2 = mavLinkPacket.isMavlink2;
         unpack(mavLinkPacket.payload);
     }
 
-            
+              
     /**
      * Returns a string with the MSG name and data
      */
     @Override
     public String toString() {
-        return "MAVLINK_MSG_ID_MISSION_ACK - sysid:"+sysid+" compid:"+compid+" target_system:"+target_system+" target_component:"+target_component+" type:"+type+" mission_type:"+mission_type+"";
+        return "MAVLINK_MSG_ID_MISSION_ACK - sysid:"+sysid+" compid:"+compid+" target_system:"+target_system+" target_component:"+target_component+" type:"+type+" mission_type:"+mission_type+" opaque_id:"+opaque_id+"";
     }
-    
+
     /**
      * Returns a human-readable string of the name of the message
      */

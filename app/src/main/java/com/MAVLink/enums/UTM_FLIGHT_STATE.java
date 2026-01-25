@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Airborne status of UAS.
  */
 public class UTM_FLIGHT_STATE {
@@ -17,4 +17,3 @@ public class UTM_FLIGHT_STATE {
    public static final int UTM_FLIGHT_STATE_NOCTRL = 32; /* UAS has no active controls. | */
    public static final int UTM_FLIGHT_STATE_ENUM_END = 33; /*  | */
 }
-            

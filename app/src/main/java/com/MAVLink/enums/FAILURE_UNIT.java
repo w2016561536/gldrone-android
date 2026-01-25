@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * List of possible units where failures can be injected.
  */
 public class FAILURE_UNIT {
@@ -27,4 +27,3 @@ public class FAILURE_UNIT {
    public static final int FAILURE_UNIT_SYSTEM_MAVLINK_SIGNAL = 105; /*  | */
    public static final int FAILURE_UNIT_ENUM_END = 106; /*  | */
 }
-            

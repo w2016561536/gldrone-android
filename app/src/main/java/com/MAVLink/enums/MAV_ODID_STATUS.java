@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * 
  */
 public class MAV_ODID_STATUS {
@@ -17,4 +17,3 @@ public class MAV_ODID_STATUS {
    public static final int MAV_ODID_STATUS_REMOTE_ID_SYSTEM_FAILURE = 4; /* The remote ID system is failing or unreliable in some way. | */
    public static final int MAV_ODID_STATUS_ENUM_END = 5; /*  | */
 }
-            

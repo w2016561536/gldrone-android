@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Battery mode. Note, the normal operation mode (i.e. when flying) should be reported as MAV_BATTERY_MODE_UNKNOWN to allow message trimming in normal flight.
  */
 public class MAV_BATTERY_MODE {
@@ -15,4 +15,3 @@ public class MAV_BATTERY_MODE {
    public static final int MAV_BATTERY_MODE_HOT_SWAP = 2; /* Battery in hot-swap mode (current limited to prevent spikes that might damage sensitive electrical circuits). | */
    public static final int MAV_BATTERY_MODE_ENUM_END = 3; /*  | */
 }
-            

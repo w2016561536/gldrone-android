@@ -9,76 +9,116 @@ package com.MAVLink.common;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Messages.MAVLinkPayload;
-        
+import com.MAVLink.Messages.Units;
+import com.MAVLink.Messages.Description;
+
 /**
  * Information about video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE, where param2 indicates the video stream id: 0 for all streams, 1 for first, 2 for second, etc.
  */
 public class msg_video_stream_information extends MAVLinkMessage {
 
     public static final int MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION = 269;
-    public static final int MAVLINK_MSG_LENGTH = 213;
+    public static final int MAVLINK_MSG_LENGTH = 215;
     private static final long serialVersionUID = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
 
-      
+    
     /**
      * Frame rate.
      */
+    @Description("Frame rate.")
+    @Units("Hz")
     public float framerate;
-      
+    
     /**
      * Bit rate.
      */
+    @Description("Bit rate.")
+    @Units("bits/s")
     public long bitrate;
-      
+    
     /**
      * Bitmap of stream status flags.
      */
+    @Description("Bitmap of stream status flags.")
+    @Units("")
     public int flags;
-      
+    
     /**
      * Horizontal resolution.
      */
+    @Description("Horizontal resolution.")
+    @Units("pix")
     public int resolution_h;
-      
+    
     /**
      * Vertical resolution.
      */
+    @Description("Vertical resolution.")
+    @Units("pix")
     public int resolution_v;
-      
+    
     /**
      * Video image rotation clockwise.
      */
+    @Description("Video image rotation clockwise.")
+    @Units("deg")
     public int rotation;
-      
+    
     /**
      * Horizontal Field of view.
      */
+    @Description("Horizontal Field of view.")
+    @Units("deg")
     public int hfov;
-      
+    
     /**
      * Video Stream ID (1 for first, 2 for second, etc.)
      */
+    @Description("Video Stream ID (1 for first, 2 for second, etc.)")
+    @Units("")
     public short stream_id;
-      
+    
     /**
      * Number of streams available.
      */
+    @Description("Number of streams available.")
+    @Units("")
     public short count;
-      
+    
     /**
      * Type of stream.
      */
+    @Description("Type of stream.")
+    @Units("")
     public short type;
-      
+    
     /**
      * Stream name.
      */
+    @Description("Stream name.")
+    @Units("")
     public byte name[] = new byte[32];
-      
+    
     /**
      * Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to).
      */
+    @Description("Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to).")
+    @Units("")
     public byte uri[] = new byte[160];
+    
+    /**
+     * Encoding of stream.
+     */
+    @Description("Encoding of stream.")
+    @Units("")
+    public short encoding;
+    
+    /**
+     * Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).
+     */
+    @Description("Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).")
+    @Units("")
+    public short camera_device_id;
     
 
     /**
@@ -91,7 +131,7 @@ public class msg_video_stream_information extends MAVLinkMessage {
         packet.sysid = sysid;
         packet.compid = compid;
         packet.msgid = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
-        
+
         packet.payload.putFloat(framerate);
         packet.payload.putUnsignedInt(bitrate);
         packet.payload.putUnsignedShort(flags);
@@ -114,6 +154,8 @@ public class msg_video_stream_information extends MAVLinkMessage {
                     
         
         if (isMavlink2) {
+             packet.payload.putUnsignedByte(encoding);
+             packet.payload.putUnsignedByte(camera_device_id);
             
         }
         return packet;
@@ -127,7 +169,7 @@ public class msg_video_stream_information extends MAVLinkMessage {
     @Override
     public void unpack(MAVLinkPayload payload) {
         payload.resetIndex();
-        
+
         this.framerate = payload.getFloat();
         this.bitrate = payload.getUnsignedInt();
         this.flags = payload.getUnsignedShort();
@@ -138,18 +180,20 @@ public class msg_video_stream_information extends MAVLinkMessage {
         this.stream_id = payload.getUnsignedByte();
         this.count = payload.getUnsignedByte();
         this.type = payload.getUnsignedByte();
-         
+        
         for (int i = 0; i < this.name.length; i++) {
             this.name[i] = payload.getByte();
         }
                 
-         
+        
         for (int i = 0; i < this.uri.length; i++) {
             this.uri[i] = payload.getByte();
         }
                 
         
         if (isMavlink2) {
+             this.encoding = payload.getUnsignedByte();
+             this.camera_device_id = payload.getUnsignedByte();
             
         }
     }
@@ -160,11 +204,11 @@ public class msg_video_stream_information extends MAVLinkMessage {
     public msg_video_stream_information() {
         this.msgid = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
     }
-    
+
     /**
      * Constructor for a new message, initializes msgid and all payload variables
      */
-    public msg_video_stream_information( float framerate, long bitrate, int flags, int resolution_h, int resolution_v, int rotation, int hfov, short stream_id, short count, short type, byte[] name, byte[] uri) {
+    public msg_video_stream_information( float framerate, long bitrate, int flags, int resolution_h, int resolution_v, int rotation, int hfov, short stream_id, short count, short type, byte[] name, byte[] uri, short encoding, short camera_device_id) {
         this.msgid = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
 
         this.framerate = framerate;
@@ -179,13 +223,15 @@ public class msg_video_stream_information extends MAVLinkMessage {
         this.type = type;
         this.name = name;
         this.uri = uri;
+        this.encoding = encoding;
+        this.camera_device_id = camera_device_id;
         
     }
-    
+
     /**
      * Constructor for a new message, initializes everything
      */
-    public msg_video_stream_information( float framerate, long bitrate, int flags, int resolution_h, int resolution_v, int rotation, int hfov, short stream_id, short count, short type, byte[] name, byte[] uri, int sysid, int compid, boolean isMavlink2) {
+    public msg_video_stream_information( float framerate, long bitrate, int flags, int resolution_h, int resolution_v, int rotation, int hfov, short stream_id, short count, short type, byte[] name, byte[] uri, short encoding, short camera_device_id, int sysid, int compid, boolean isMavlink2) {
         this.msgid = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
         this.sysid = sysid;
         this.compid = compid;
@@ -203,6 +249,8 @@ public class msg_video_stream_information extends MAVLinkMessage {
         this.type = type;
         this.name = name;
         this.uri = uri;
+        this.encoding = encoding;
+        this.camera_device_id = camera_device_id;
         
     }
 
@@ -213,7 +261,7 @@ public class msg_video_stream_information extends MAVLinkMessage {
      */
     public msg_video_stream_information(MAVLinkPacket mavLinkPacket) {
         this.msgid = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
-        
+
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
         this.isMavlink2 = mavLinkPacket.isMavlink2;
@@ -278,15 +326,15 @@ public class msg_video_stream_information extends MAVLinkMessage {
         return buf.toString();
 
     }
-                         
+                             
     /**
      * Returns a string with the MSG name and data
      */
     @Override
     public String toString() {
-        return "MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION - sysid:"+sysid+" compid:"+compid+" framerate:"+framerate+" bitrate:"+bitrate+" flags:"+flags+" resolution_h:"+resolution_h+" resolution_v:"+resolution_v+" rotation:"+rotation+" hfov:"+hfov+" stream_id:"+stream_id+" count:"+count+" type:"+type+" name:"+name+" uri:"+uri+"";
+        return "MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION - sysid:"+sysid+" compid:"+compid+" framerate:"+framerate+" bitrate:"+bitrate+" flags:"+flags+" resolution_h:"+resolution_h+" resolution_v:"+resolution_v+" rotation:"+rotation+" hfov:"+hfov+" stream_id:"+stream_id+" count:"+count+" type:"+type+" name:"+name+" uri:"+uri+" encoding:"+encoding+" camera_device_id:"+camera_device_id+"";
     }
-    
+
     /**
      * Returns a human-readable string of the name of the message
      */

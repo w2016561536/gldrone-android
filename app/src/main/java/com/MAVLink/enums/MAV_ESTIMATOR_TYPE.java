@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Enumeration of estimator types
  */
 public class MAV_ESTIMATOR_TYPE {
@@ -21,4 +21,3 @@ public class MAV_ESTIMATOR_TYPE {
    public static final int MAV_ESTIMATOR_TYPE_AUTOPILOT = 8; /* Estimator on autopilot. | */
    public static final int MAV_ESTIMATOR_TYPE_ENUM_END = 9; /*  | */
 }
-            

@@ -9,66 +9,95 @@ package com.MAVLink.common;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Messages.MAVLinkPayload;
-        
+import com.MAVLink.Messages.Units;
+import com.MAVLink.Messages.Description;
+
 /**
  * Information about the field of view of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.
  */
 public class msg_camera_fov_status extends MAVLinkMessage {
 
     public static final int MAVLINK_MSG_ID_CAMERA_FOV_STATUS = 271;
-    public static final int MAVLINK_MSG_LENGTH = 52;
+    public static final int MAVLINK_MSG_LENGTH = 53;
     private static final long serialVersionUID = MAVLINK_MSG_ID_CAMERA_FOV_STATUS;
 
-      
+    
     /**
      * Timestamp (time since system boot).
      */
+    @Description("Timestamp (time since system boot).")
+    @Units("ms")
     public long time_boot_ms;
-      
+    
     /**
      * Latitude of camera (INT32_MAX if unknown).
      */
+    @Description("Latitude of camera (INT32_MAX if unknown).")
+    @Units("degE7")
     public int lat_camera;
-      
+    
     /**
      * Longitude of camera (INT32_MAX if unknown).
      */
+    @Description("Longitude of camera (INT32_MAX if unknown).")
+    @Units("degE7")
     public int lon_camera;
-      
+    
     /**
      * Altitude (MSL) of camera (INT32_MAX if unknown).
      */
+    @Description("Altitude (MSL) of camera (INT32_MAX if unknown).")
+    @Units("mm")
     public int alt_camera;
-      
+    
     /**
      * Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).
      */
+    @Description("Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).")
+    @Units("degE7")
     public int lat_image;
-      
+    
     /**
      * Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).
      */
+    @Description("Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).")
+    @Units("degE7")
     public int lon_image;
-      
+    
     /**
      * Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).
      */
+    @Description("Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).")
+    @Units("mm")
     public int alt_image;
-      
+    
     /**
      * Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
      */
+    @Description("Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)")
+    @Units("")
     public float q[] = new float[4];
-      
+    
     /**
      * Horizontal field of view (NaN if unknown).
      */
+    @Description("Horizontal field of view (NaN if unknown).")
+    @Units("deg")
     public float hfov;
-      
+    
     /**
      * Vertical field of view (NaN if unknown).
      */
+    @Description("Vertical field of view (NaN if unknown).")
+    @Units("deg")
     public float vfov;
+    
+    /**
+     * Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).
+     */
+    @Description("Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).")
+    @Units("")
+    public short camera_device_id;
     
 
     /**
@@ -81,7 +110,7 @@ public class msg_camera_fov_status extends MAVLinkMessage {
         packet.sysid = sysid;
         packet.compid = compid;
         packet.msgid = MAVLINK_MSG_ID_CAMERA_FOV_STATUS;
-        
+
         packet.payload.putUnsignedInt(time_boot_ms);
         packet.payload.putInt(lat_camera);
         packet.payload.putInt(lon_camera);
@@ -98,6 +127,7 @@ public class msg_camera_fov_status extends MAVLinkMessage {
         packet.payload.putFloat(vfov);
         
         if (isMavlink2) {
+             packet.payload.putUnsignedByte(camera_device_id);
             
         }
         return packet;
@@ -111,7 +141,7 @@ public class msg_camera_fov_status extends MAVLinkMessage {
     @Override
     public void unpack(MAVLinkPayload payload) {
         payload.resetIndex();
-        
+
         this.time_boot_ms = payload.getUnsignedInt();
         this.lat_camera = payload.getInt();
         this.lon_camera = payload.getInt();
@@ -119,7 +149,7 @@ public class msg_camera_fov_status extends MAVLinkMessage {
         this.lat_image = payload.getInt();
         this.lon_image = payload.getInt();
         this.alt_image = payload.getInt();
-         
+        
         for (int i = 0; i < this.q.length; i++) {
             this.q[i] = payload.getFloat();
         }
@@ -128,6 +158,7 @@ public class msg_camera_fov_status extends MAVLinkMessage {
         this.vfov = payload.getFloat();
         
         if (isMavlink2) {
+             this.camera_device_id = payload.getUnsignedByte();
             
         }
     }
@@ -138,11 +169,11 @@ public class msg_camera_fov_status extends MAVLinkMessage {
     public msg_camera_fov_status() {
         this.msgid = MAVLINK_MSG_ID_CAMERA_FOV_STATUS;
     }
-    
+
     /**
      * Constructor for a new message, initializes msgid and all payload variables
      */
-    public msg_camera_fov_status( long time_boot_ms, int lat_camera, int lon_camera, int alt_camera, int lat_image, int lon_image, int alt_image, float[] q, float hfov, float vfov) {
+    public msg_camera_fov_status( long time_boot_ms, int lat_camera, int lon_camera, int alt_camera, int lat_image, int lon_image, int alt_image, float[] q, float hfov, float vfov, short camera_device_id) {
         this.msgid = MAVLINK_MSG_ID_CAMERA_FOV_STATUS;
 
         this.time_boot_ms = time_boot_ms;
@@ -155,13 +186,14 @@ public class msg_camera_fov_status extends MAVLinkMessage {
         this.q = q;
         this.hfov = hfov;
         this.vfov = vfov;
+        this.camera_device_id = camera_device_id;
         
     }
-    
+
     /**
      * Constructor for a new message, initializes everything
      */
-    public msg_camera_fov_status( long time_boot_ms, int lat_camera, int lon_camera, int alt_camera, int lat_image, int lon_image, int alt_image, float[] q, float hfov, float vfov, int sysid, int compid, boolean isMavlink2) {
+    public msg_camera_fov_status( long time_boot_ms, int lat_camera, int lon_camera, int alt_camera, int lat_image, int lon_image, int alt_image, float[] q, float hfov, float vfov, short camera_device_id, int sysid, int compid, boolean isMavlink2) {
         this.msgid = MAVLINK_MSG_ID_CAMERA_FOV_STATUS;
         this.sysid = sysid;
         this.compid = compid;
@@ -177,6 +209,7 @@ public class msg_camera_fov_status extends MAVLinkMessage {
         this.q = q;
         this.hfov = hfov;
         this.vfov = vfov;
+        this.camera_device_id = camera_device_id;
         
     }
 
@@ -187,22 +220,22 @@ public class msg_camera_fov_status extends MAVLinkMessage {
      */
     public msg_camera_fov_status(MAVLinkPacket mavLinkPacket) {
         this.msgid = MAVLINK_MSG_ID_CAMERA_FOV_STATUS;
-        
+
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
         this.isMavlink2 = mavLinkPacket.isMavlink2;
         unpack(mavLinkPacket.payload);
     }
 
-                        
+                          
     /**
      * Returns a string with the MSG name and data
      */
     @Override
     public String toString() {
-        return "MAVLINK_MSG_ID_CAMERA_FOV_STATUS - sysid:"+sysid+" compid:"+compid+" time_boot_ms:"+time_boot_ms+" lat_camera:"+lat_camera+" lon_camera:"+lon_camera+" alt_camera:"+alt_camera+" lat_image:"+lat_image+" lon_image:"+lon_image+" alt_image:"+alt_image+" q:"+q+" hfov:"+hfov+" vfov:"+vfov+"";
+        return "MAVLINK_MSG_ID_CAMERA_FOV_STATUS - sysid:"+sysid+" compid:"+compid+" time_boot_ms:"+time_boot_ms+" lat_camera:"+lat_camera+" lon_camera:"+lon_camera+" alt_camera:"+alt_camera+" lat_image:"+lat_image+" lon_image:"+lon_image+" alt_image:"+alt_image+" q:"+q+" hfov:"+hfov+" vfov:"+vfov+" camera_device_id:"+camera_device_id+"";
     }
-    
+
     /**
      * Returns a human-readable string of the name of the message
      */

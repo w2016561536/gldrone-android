@@ -2,12 +2,14 @@ package com.gldz.gldrone;
 
 import static com.MAVLink.common.msg_altitude.MAVLINK_MSG_ID_ALTITUDE;
 import static com.MAVLink.common.msg_attitude.MAVLINK_MSG_ID_ATTITUDE;
+import static com.MAVLink.common.msg_available_modes.MAVLINK_MSG_ID_AVAILABLE_MODES;
 import static com.MAVLink.common.msg_battery_status.MAVLINK_MSG_ID_BATTERY_STATUS;
 import static com.MAVLink.common.msg_command_ack.MAVLINK_MSG_ID_COMMAND_ACK;
 import static com.MAVLink.common.msg_mission_request.MAVLINK_MSG_ID_MISSION_REQUEST;
 import static com.MAVLink.common.msg_rc_channels_raw.MAVLINK_MSG_ID_RC_CHANNELS_RAW;
 import static com.MAVLink.common.msg_serial_control.MAVLINK_MSG_ID_SERIAL_CONTROL;
 import static com.MAVLink.common.msg_servo_output_raw.MAVLINK_MSG_ID_SERVO_OUTPUT_RAW;
+import static com.MAVLink.common.msg_set_mode.MAVLINK_MSG_ID_SET_MODE;
 import static com.MAVLink.common.msg_sys_status.MAVLINK_MSG_ID_SYS_STATUS;
 import static com.MAVLink.common.msg_vfr_hud.MAVLINK_MSG_ID_VFR_HUD;
 import static com.MAVLink.minimal.msg_heartbeat.MAVLINK_MSG_ID_HEARTBEAT;
@@ -17,11 +19,14 @@ import android.util.Log;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Parser;
 import com.MAVLink.common.msg_attitude;
+import com.MAVLink.common.msg_available_modes;
 import com.MAVLink.common.msg_command_ack;
 import com.MAVLink.common.msg_command_long;
+import com.MAVLink.common.msg_manual_control;
 import com.MAVLink.common.msg_rc_channels_override;
 import com.MAVLink.common.msg_rc_channels_raw;
 import com.MAVLink.common.msg_servo_output_raw;
+import com.MAVLink.common.msg_set_mode;
 import com.MAVLink.common.msg_sys_status;
 import com.MAVLink.enums.MAV_AUTOPILOT;
 import com.MAVLink.enums.MAV_CMD;
@@ -37,12 +42,18 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Mavlink {
 
-    public final static String[] MODE = {"MANUAL", "STABILIZED","OFFBOARD"};//, "ACRO",  "ALTCTL", "POSCTL", "AUTO_MISSION", "AUTO_LOITER", "AUTO_RTL", "AUTO_TAKEOFF", "STABILIZED", "AUTO_LAND", "AUTO_PRECLAND"};
+    public static String[] MODE = {"MANUAL", "STABILIZED","OFFBOARD"};//, "ACRO",  "ALTCTL", "POSCTL", "AUTO_MISSION", "AUTO_LOITER", "AUTO_RTL", "AUTO_TAKEOFF", "STABILIZED", "AUTO_LAND", "AUTO_PRECLAND"};
+
+    public ArrayList<String> modeList = new ArrayList<>();
+    public ArrayList<Long> modeId = new ArrayList<>();
+    public int fullModeCount = -1;
 
     enum PX4_MODE
     {
@@ -118,7 +129,7 @@ public class Mavlink {
         Thread recvThread = new Thread(() -> {
             try {
                 Parser parser = new Parser();
-                byte[] receiveData = new byte[4096];
+                byte[] receiveData = new byte[25565];
 
                 while (true) {
                     DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -196,8 +207,9 @@ public class Mavlink {
         cmd.command = MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL;
         cmd.param1 = msgid;
         cmd.param2 = interval;
+        cmd.isMavlink2 = true;
 
-        sendMsg(cmd.pack());
+//        sendMsg(cmd.pack());
     }
 
     public void sendMsgSetMode(int mainMode,int subMode)
@@ -212,10 +224,37 @@ public class Mavlink {
         cmd.param1 = 1;
         cmd.param2 = mainMode;
         cmd.param3 = subMode;
+        cmd.isMavlink2=true;
 
         //Log.i("MAVLINK", "send " + cmd.toString());
 
-        sendMsg(cmd.pack());
+//        sendMsg(cmd.pack());
+    }
+
+    public void sendMsgSetCustomMode(long customMode)
+    {
+//        msg_command_long cmd = new msg_command_long();
+//        cmd.sysid = M_SYS_ID;
+//        cmd.compid = M_COMP_ID;
+//        cmd.target_system = TARGET_SYS_ID;
+//        cmd.target_component = TARGET_COMP_ID;
+//
+//        cmd.command = MAVLINK_MSG_ID_SET_MODE;
+//        cmd.param1 = 1;
+//        cmd.param2 = 1;
+//        cmd.param3 = customMode;
+
+        msg_set_mode msgmode = new msg_set_mode();
+        msgmode.sysid = M_SYS_ID;
+        msgmode.compid = M_COMP_ID;
+        msgmode.base_mode = 1;
+        msgmode.target_system = 1;
+        msgmode.custom_mode = customMode;
+        Log.i("MAVLINK", "send " + msgmode.toString());
+        msgmode.isMavlink2 = true;
+
+
+        sendMsg(msgmode.pack());
     }
 
     public void sendMsgHeartbeat()
@@ -223,12 +262,12 @@ public class Mavlink {
         msg_heartbeat heart = new msg_heartbeat();
         heart.type = MAV_TYPE.MAV_TYPE_GCS;
         heart.autopilot = MAV_AUTOPILOT.MAV_AUTOPILOT_INVALID;
-        heart.base_mode = MAV_MODE.MAV_MODE_GUIDED_ARMED;
+        heart.base_mode = 192;
         heart.custom_mode = 0;
         heart.system_status = MAV_STATE.MAV_STATE_ACTIVE;
         heart.sysid = M_SYS_ID;
         heart.compid = M_COMP_ID;
-        //heart.isMavlink2 = true;
+        heart.isMavlink2 = true;
         heart.mavlink_version = 3;
 
         sendMsg(heart.pack());
@@ -250,12 +289,27 @@ public class Mavlink {
         rc.chan7_raw = 1500;
         rc.chan8_raw = 1500;
 
-        sendMsg(rc.pack());
+//        sendMsg(rc.pack());
     }
 
-    //MAV_MODE_FLAG_MANUAL_INPUT_ENABLED
+    public void sendMsgManualControl(int channel_z, int channel_r, int channel_x, int channel_y)
+    {
+        msg_manual_control msgManualControl = new msg_manual_control();
+        msgManualControl.isMavlink2 = true;
+        msgManualControl.sysid = M_SYS_ID;
+        msgManualControl.compid = M_COMP_ID;
+        msgManualControl.target = 1;
 
-    public void sendMsgDisarm(int is_armed)
+        msgManualControl.x = (short) channel_x;
+        msgManualControl.y = (short) channel_y;
+        msgManualControl.r = (short) channel_r;
+        msgManualControl.z = (short) channel_z;
+
+        sendMsg(msgManualControl.pack());
+    }
+
+
+    public void sendMsgDisarm(int is_armed, float is_forced)
     {
         msg_command_long cmd = new msg_command_long();
         cmd.sysid = M_SYS_ID;
@@ -265,6 +319,7 @@ public class Mavlink {
 
         cmd.command = MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM;
         cmd.param1 = is_armed;
+        cmd.param2 = is_forced;
 
         sendMsg(cmd.pack());
     }
@@ -322,7 +377,7 @@ public class Mavlink {
         }
 
         if(mMavlinkListener != null)
-            mMavlinkListener.mode(mode);
+            mMavlinkListener.customMode(heart.custom_mode);
     }
 
     private PX4_MODE getMode(byte mainMode,byte subMode)
@@ -379,7 +434,8 @@ public class Mavlink {
             try {
                 msg.seq = seq++;
                 byte[] byteMsg = msg.encodePacket();
-                DatagramPacket sendPacket = new DatagramPacket(byteMsg, byteMsg.length, InetAddress.getByName("10.0.0.1"), 14556);
+                DatagramPacket sendPacket = new DatagramPacket(byteMsg, byteMsg.length, InetAddress.getByName("10.0.0.2"), 14556);
+//                DatagramPacket sendPacket = new DatagramPacket(byteMsg, byteMsg.length, InetAddress.getByName("172.25.151.141"), 18570);
                 if(socket != null)
                     socket.send(sendPacket);
             } catch (IOException e) {
@@ -391,7 +447,27 @@ public class Mavlink {
     private void recvMsg(MAVLinkPacket msg)
     {
         if (msg != null) {
+//            Log.e("MSGID RECV: ", String.valueOf(msg.msgid));
+
             switch (msg.msgid) {
+                case MAVLINK_MSG_ID_AVAILABLE_MODES:
+                    msg_available_modes msg_available_modes = new msg_available_modes();
+                    msg_available_modes.unpack(msg.payload);
+                    if (msg_available_modes.getMode_Name().contains("Mode not available")){
+                        break;
+                    }
+                    if (msg_available_modes.getMode_Name().length() < 2){
+                        break;
+                    }
+                    if (msg_available_modes.getMode_Name().charAt(0) == 0 &&
+                            msg_available_modes.getMode_Name().charAt(1) == 0
+                    ){
+                        break;
+                    }
+                    fullModeCount = msg_available_modes.number_modes;
+                    modeId.add(msg_available_modes.custom_mode);
+                    modeList.add(msg_available_modes.getMode_Name());
+                    break;
                 case MAVLINK_MSG_ID_HEARTBEAT:
                     msg_heartbeat heart = new msg_heartbeat();
                     heart.unpack(msg.payload);
@@ -417,7 +493,7 @@ public class Mavlink {
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_SERVO_OUTPUT_RAW");
                     msg_servo_output_raw servo_output_raw = new msg_servo_output_raw();
                     servo_output_raw.unpack(msg.payload);
-                    mMavlinkListener.servo_output_raw(servo_output_raw);
+//                    mMavlinkListener.servo_output_raw(servo_output_raw);
                     break;
                 case MAVLINK_MSG_ID_SYS_STATUS:
                     //Log.i("MAVLINK", "MAVLINK_MSG_ID_SYS_STATUS");
@@ -450,6 +526,26 @@ public class Mavlink {
                     break;
             }
         }
+    }
+
+    public void requestCustomModeList(){
+            msg_command_long cmd = new msg_command_long();
+            cmd.sysid = M_SYS_ID;
+            cmd.compid = M_COMP_ID;
+            cmd.target_system = TARGET_SYS_ID;
+            cmd.target_component = TARGET_COMP_ID;
+            cmd.isMavlink2 = true;
+
+            cmd.command = MAV_CMD.MAV_CMD_REQUEST_MESSAGE;
+            cmd.param1 = MAVLINK_MSG_ID_AVAILABLE_MODES;
+            cmd.param2 = 0;
+            cmd.param3 = 0;
+            cmd.param4 = 0;
+            cmd.param5 = 0;
+            cmd.param6 = 0;
+            cmd.param7 = 0;
+
+            sendMsg(cmd.pack());
     }
 
     public void setMode(String mode){
@@ -532,6 +628,7 @@ public class Mavlink {
     }
     public interface MavlinkListener {
         public void mode(PX4_MODE mode);
+        public void customMode(long mode);
         public void connect(boolean isConnect);
         public void armed(boolean isArm);
         public void sys_status(msg_sys_status sys_status);

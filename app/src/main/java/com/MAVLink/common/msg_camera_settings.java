@@ -9,36 +9,53 @@ package com.MAVLink.common;
 import com.MAVLink.MAVLinkPacket;
 import com.MAVLink.Messages.MAVLinkMessage;
 import com.MAVLink.Messages.MAVLinkPayload;
-        
+import com.MAVLink.Messages.Units;
+import com.MAVLink.Messages.Description;
+
 /**
  * Settings of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.
  */
 public class msg_camera_settings extends MAVLinkMessage {
 
     public static final int MAVLINK_MSG_ID_CAMERA_SETTINGS = 260;
-    public static final int MAVLINK_MSG_LENGTH = 13;
+    public static final int MAVLINK_MSG_LENGTH = 14;
     private static final long serialVersionUID = MAVLINK_MSG_ID_CAMERA_SETTINGS;
 
-      
+    
     /**
      * Timestamp (time since system boot).
      */
+    @Description("Timestamp (time since system boot).")
+    @Units("ms")
     public long time_boot_ms;
-      
+    
     /**
      * Camera mode
      */
+    @Description("Camera mode")
+    @Units("")
     public short mode_id;
-      
+    
     /**
-     * Current zoom level (0.0 to 100.0, NaN if not known)
+     * Current zoom level as a percentage of the full range (0.0 to 100.0, NaN if not known)
      */
+    @Description("Current zoom level as a percentage of the full range (0.0 to 100.0, NaN if not known)")
+    @Units("")
     public float zoomLevel;
-      
+    
     /**
-     * Current focus level (0.0 to 100.0, NaN if not known)
+     * Current focus level as a percentage of the full range (0.0 to 100.0, NaN if not known)
      */
+    @Description("Current focus level as a percentage of the full range (0.0 to 100.0, NaN if not known)")
+    @Units("")
     public float focusLevel;
+    
+    /**
+     * Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).
+     */
+    @Description("Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera (with its own component id).")
+    @Units("")
+    public short camera_device_id;
     
 
     /**
@@ -51,13 +68,14 @@ public class msg_camera_settings extends MAVLinkMessage {
         packet.sysid = sysid;
         packet.compid = compid;
         packet.msgid = MAVLINK_MSG_ID_CAMERA_SETTINGS;
-        
+
         packet.payload.putUnsignedInt(time_boot_ms);
         packet.payload.putUnsignedByte(mode_id);
         
         if (isMavlink2) {
              packet.payload.putFloat(zoomLevel);
              packet.payload.putFloat(focusLevel);
+             packet.payload.putUnsignedByte(camera_device_id);
             
         }
         return packet;
@@ -71,13 +89,14 @@ public class msg_camera_settings extends MAVLinkMessage {
     @Override
     public void unpack(MAVLinkPayload payload) {
         payload.resetIndex();
-        
+
         this.time_boot_ms = payload.getUnsignedInt();
         this.mode_id = payload.getUnsignedByte();
         
         if (isMavlink2) {
              this.zoomLevel = payload.getFloat();
              this.focusLevel = payload.getFloat();
+             this.camera_device_id = payload.getUnsignedByte();
             
         }
     }
@@ -88,24 +107,25 @@ public class msg_camera_settings extends MAVLinkMessage {
     public msg_camera_settings() {
         this.msgid = MAVLINK_MSG_ID_CAMERA_SETTINGS;
     }
-    
+
     /**
      * Constructor for a new message, initializes msgid and all payload variables
      */
-    public msg_camera_settings( long time_boot_ms, short mode_id, float zoomLevel, float focusLevel) {
+    public msg_camera_settings( long time_boot_ms, short mode_id, float zoomLevel, float focusLevel, short camera_device_id) {
         this.msgid = MAVLINK_MSG_ID_CAMERA_SETTINGS;
 
         this.time_boot_ms = time_boot_ms;
         this.mode_id = mode_id;
         this.zoomLevel = zoomLevel;
         this.focusLevel = focusLevel;
+        this.camera_device_id = camera_device_id;
         
     }
-    
+
     /**
      * Constructor for a new message, initializes everything
      */
-    public msg_camera_settings( long time_boot_ms, short mode_id, float zoomLevel, float focusLevel, int sysid, int compid, boolean isMavlink2) {
+    public msg_camera_settings( long time_boot_ms, short mode_id, float zoomLevel, float focusLevel, short camera_device_id, int sysid, int compid, boolean isMavlink2) {
         this.msgid = MAVLINK_MSG_ID_CAMERA_SETTINGS;
         this.sysid = sysid;
         this.compid = compid;
@@ -115,6 +135,7 @@ public class msg_camera_settings extends MAVLinkMessage {
         this.mode_id = mode_id;
         this.zoomLevel = zoomLevel;
         this.focusLevel = focusLevel;
+        this.camera_device_id = camera_device_id;
         
     }
 
@@ -125,22 +146,22 @@ public class msg_camera_settings extends MAVLinkMessage {
      */
     public msg_camera_settings(MAVLinkPacket mavLinkPacket) {
         this.msgid = MAVLINK_MSG_ID_CAMERA_SETTINGS;
-        
+
         this.sysid = mavLinkPacket.sysid;
         this.compid = mavLinkPacket.compid;
         this.isMavlink2 = mavLinkPacket.isMavlink2;
         unpack(mavLinkPacket.payload);
     }
 
-            
+              
     /**
      * Returns a string with the MSG name and data
      */
     @Override
     public String toString() {
-        return "MAVLINK_MSG_ID_CAMERA_SETTINGS - sysid:"+sysid+" compid:"+compid+" time_boot_ms:"+time_boot_ms+" mode_id:"+mode_id+" zoomLevel:"+zoomLevel+" focusLevel:"+focusLevel+"";
+        return "MAVLINK_MSG_ID_CAMERA_SETTINGS - sysid:"+sysid+" compid:"+compid+" time_boot_ms:"+time_boot_ms+" mode_id:"+mode_id+" zoomLevel:"+zoomLevel+" focusLevel:"+focusLevel+" camera_device_id:"+camera_device_id+"";
     }
-    
+
     /**
      * Returns a human-readable string of the name of the message
      */

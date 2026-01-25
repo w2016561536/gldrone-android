@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * SERIAL_CONTROL flags (bitmask)
  */
 public class SERIAL_CONTROL_FLAG {
@@ -17,4 +17,3 @@ public class SERIAL_CONTROL_FLAG {
    public static final int SERIAL_CONTROL_FLAG_MULTI = 16; /* Send multiple replies until port is drained | */
    public static final int SERIAL_CONTROL_FLAG_ENUM_END = 17; /*  | */
 }
-            

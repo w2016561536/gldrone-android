@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Possible responses from a CELLULAR_CONFIG message.
  */
 public class CELLULAR_CONFIG_RESPONSE {
@@ -17,4 +17,3 @@ public class CELLULAR_CONFIG_RESPONSE {
    public static final int CELLULAR_CONFIG_BLOCKED_PUK_REQUIRED = 4; /* PUK is required to unblock SIM card. | */
    public static final int CELLULAR_CONFIG_RESPONSE_ENUM_END = 5; /*  | */
 }
-            

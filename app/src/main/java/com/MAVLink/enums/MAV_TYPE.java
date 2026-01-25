@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA).
  */
 public class MAV_TYPE {
@@ -33,8 +33,8 @@ public class MAV_TYPE {
    public static final int MAV_TYPE_VTOL_TAILSITTER_QUADROTOR = 20; /* Quad-rotor Tailsitter VTOL using a V-shaped quad config in vertical operation. Note: value previously named MAV_TYPE_VTOL_QUADROTOR. | */
    public static final int MAV_TYPE_VTOL_TILTROTOR = 21; /* Tiltrotor VTOL. Fuselage and wings stay (nominally) horizontal in all flight phases. It able to tilt (some) rotors to provide thrust in cruise flight. | */
    public static final int MAV_TYPE_VTOL_FIXEDROTOR = 22; /* VTOL with separate fixed rotors for hover and cruise flight. Fuselage and wings stay (nominally) horizontal in all flight phases. | */
-   public static final int MAV_TYPE_VTOL_TAILSITTER = 23; /* Tailsitter VTOL. Fuselage and wings orientation changes depending on flight phase: vertical for hover, horizontal for cruise. Use more specific VTOL MAV_TYPE_VTOL_DUOROTOR or MAV_TYPE_VTOL_QUADROTOR if appropriate. | */
-   public static final int MAV_TYPE_VTOL_RESERVED4 = 24; /* VTOL reserved 4 | */
+   public static final int MAV_TYPE_VTOL_TAILSITTER = 23; /* Tailsitter VTOL. Fuselage and wings orientation changes depending on flight phase: vertical for hover, horizontal for cruise. Use more specific VTOL MAV_TYPE_VTOL_TAILSITTER_DUOROTOR or MAV_TYPE_VTOL_TAILSITTER_QUADROTOR if appropriate. | */
+   public static final int MAV_TYPE_VTOL_TILTWING = 24; /* Tiltwing VTOL. Fuselage stays horizontal in all flight phases. The whole wing, along with any attached engine, can tilt between vertical and horizontal mode. | */
    public static final int MAV_TYPE_VTOL_RESERVED5 = 25; /* VTOL reserved 5 | */
    public static final int MAV_TYPE_GIMBAL = 26; /* Gimbal | */
    public static final int MAV_TYPE_ADSB = 27; /* ADSB system | */
@@ -53,6 +53,12 @@ public class MAV_TYPE {
    public static final int MAV_TYPE_IMU = 40; /* IMU | */
    public static final int MAV_TYPE_GPS = 41; /* GPS | */
    public static final int MAV_TYPE_WINCH = 42; /* Winch | */
-   public static final int MAV_TYPE_ENUM_END = 43; /*  | */
+   public static final int MAV_TYPE_GENERIC_MULTIROTOR = 43; /* Generic multirotor that does not fit into a specific type or whose type is unknown | */
+   public static final int MAV_TYPE_ILLUMINATOR = 44; /* Illuminator. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light). | */
+   public static final int MAV_TYPE_SPACECRAFT_ORBITER = 45; /* Orbiter spacecraft. Includes satellites orbiting terrestrial and extra-terrestrial bodies. Follows NASA Spacecraft Classification. | */
+   public static final int MAV_TYPE_GROUND_QUADRUPED = 46; /* A generic four-legged ground vehicle (e.g., a robot dog). | */
+   public static final int MAV_TYPE_VTOL_GYRODYNE = 47; /* VTOL hybrid of helicopter and autogyro. It has a main rotor for lift and separate propellers for forward flight. The rotor must be powered for hover but can autorotate in cruise flight. See: https://en.wikipedia.org/wiki/Gyrodyne | */
+   public static final int MAV_TYPE_GRIPPER = 48; /* Gripper | */
+   public static final int MAV_TYPE_RADIO = 49; /* Radio | */
+   public static final int MAV_TYPE_ENUM_END = 50; /*  | */
 }
-            

@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Type of GPS fix
  */
 public class GPS_FIX_TYPE {
@@ -21,4 +21,3 @@ public class GPS_FIX_TYPE {
    public static final int GPS_FIX_TYPE_PPP = 8; /* PPP, 3D position. | */
    public static final int GPS_FIX_TYPE_ENUM_END = 9; /*  | */
 }
-            

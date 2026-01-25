@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * MAV FTP error codes (https://mavlink.io/en/services/ftp.html)
  */
 public class MAV_FTP_ERR {
@@ -24,4 +24,3 @@ public class MAV_FTP_ERR {
    public static final int MAV_FTP_ERR_FILENOTFOUND = 10; /* FileNotFound: File/directory not found | */
    public static final int MAV_FTP_ERR_ENUM_END = 11; /*  | */
 }
-            

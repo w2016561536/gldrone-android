@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * List of possible failure type to inject.
  */
 public class FAILURE_TYPE {
@@ -20,4 +20,3 @@ public class FAILURE_TYPE {
    public static final int FAILURE_TYPE_INTERMITTENT = 7; /* Unit is sometimes working, sometimes not. | */
    public static final int FAILURE_TYPE_ENUM_END = 8; /*  | */
 }
-            

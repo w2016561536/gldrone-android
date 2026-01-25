@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Generalized UAVCAN node health
  */
 public class UAVCAN_NODE_HEALTH {
@@ -16,4 +16,3 @@ public class UAVCAN_NODE_HEALTH {
    public static final int UAVCAN_NODE_HEALTH_CRITICAL = 3; /* The node has suffered a fatal malfunction. | */
    public static final int UAVCAN_NODE_HEALTH_ENUM_END = 4; /*  | */
 }
-            

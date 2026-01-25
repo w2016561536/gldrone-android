@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Result of mission operation (in a MISSION_ACK message).
  */
 public class MAV_MISSION_RESULT {
@@ -28,4 +28,3 @@ public class MAV_MISSION_RESULT {
    public static final int MAV_MISSION_OPERATION_CANCELLED = 15; /* Current mission operation cancelled (e.g. mission upload, mission download). | */
    public static final int MAV_MISSION_RESULT_ENUM_END = 16; /*  | */
 }
-            

@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Actuator output function. Values greater or equal to 1000 are autopilot-specific.
  */
 public class ACTUATOR_OUTPUT_FUNCTION {
@@ -45,4 +45,3 @@ public class ACTUATOR_OUTPUT_FUNCTION {
    public static final int ACTUATOR_OUTPUT_FUNCTION_SERVO16 = 48; /* Servo 16 | */
    public static final int ACTUATOR_OUTPUT_FUNCTION_ENUM_END = 49; /*  | */
 }
-            

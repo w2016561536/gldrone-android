@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Supported component metadata types. These are used in the "general" metadata file returned by COMPONENT_METADATA to provide information about supported metadata types. The types are not used directly in MAVLink messages.
  */
 public class COMP_METADATA_TYPE {
@@ -18,4 +18,3 @@ public class COMP_METADATA_TYPE {
    public static final int COMP_METADATA_TYPE_ACTUATORS = 5; /* Meta data for actuator configuration (motors, servos and vehicle geometry) and testing. | */
    public static final int COMP_METADATA_TYPE_ENUM_END = 6; /*  | */
 }
-            

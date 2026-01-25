@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Enumeration of the ADSB altimeter types
  */
 public class ADSB_ALTITUDE_TYPE {
@@ -14,4 +14,3 @@ public class ADSB_ALTITUDE_TYPE {
    public static final int ADSB_ALTITUDE_TYPE_GEOMETRIC = 1; /* Altitude reported from a GNSS source | */
    public static final int ADSB_ALTITUDE_TYPE_ENUM_END = 2; /*  | */
 }
-            

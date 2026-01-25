@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Smart battery supply status/fault flags (bitmask) for health indication. The battery must also report either MAV_BATTERY_CHARGE_STATE_FAILED or MAV_BATTERY_CHARGE_STATE_UNHEALTHY if any of these are set.
  */
 public class MAV_BATTERY_FAULT {
@@ -21,4 +21,3 @@ public class MAV_BATTERY_FAULT {
    public static final int BATTERY_FAULT_INCOMPATIBLE_CELLS_CONFIGURATION = 256; /* Battery is not compatible due to cell configuration (e.g. 5s1p when vehicle requires 6s). | */
    public static final int MAV_BATTERY_FAULT_ENUM_END = 257; /*  | */
 }
-            

@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * 
         Actions for reading/writing parameters between persistent and volatile storage when using MAV_CMD_PREFLIGHT_STORAGE.
         (Commonly parameters are loaded from persistent storage (flash/EEPROM) into volatile storage (RAM) on startup and written back when they are changed.)
@@ -20,4 +20,3 @@ public class PREFLIGHT_STORAGE_PARAMETER_ACTION {
    public static final int PARAM_RESET_ALL_DEFAULT = 4; /* Reset all parameters, including operation counters, to default values | */
    public static final int PREFLIGHT_STORAGE_PARAMETER_ACTION_ENUM_END = 5; /*  | */
 }
-            

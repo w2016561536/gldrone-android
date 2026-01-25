@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Type of mission items being requested/sent in mission protocol.
  */
 public class MAV_MISSION_TYPE {
@@ -16,4 +16,3 @@ public class MAV_MISSION_TYPE {
    public static final int MAV_MISSION_TYPE_ALL = 255; /* Only used in MISSION_CLEAR_ALL to clear all mission types. | */
    public static final int MAV_MISSION_TYPE_ENUM_END = 256; /*  | */
 }
-            

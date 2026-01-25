@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Possible actions an aircraft can take to avoid a collision.
  */
 public class MAV_COLLISION_ACTION {
@@ -19,4 +19,3 @@ public class MAV_COLLISION_ACTION {
    public static final int MAV_COLLISION_ACTION_HOVER = 6; /* Aircraft to stop in place | */
    public static final int MAV_COLLISION_ACTION_ENUM_END = 7; /*  | */
 }
-            

@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Indicates the ESC connection type.
  */
 public class ESC_CONNECTION_TYPE {
@@ -18,4 +18,3 @@ public class ESC_CONNECTION_TYPE {
    public static final int ESC_CONNECTION_TYPE_DSHOT = 5; /* DShot ESC. | */
    public static final int ESC_CONNECTION_TYPE_ENUM_END = 6; /*  | */
 }
-            

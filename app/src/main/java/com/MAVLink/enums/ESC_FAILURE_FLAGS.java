@@ -6,11 +6,10 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Flags to report ESC failures.
  */
 public class ESC_FAILURE_FLAGS {
-   public static final int ESC_FAILURE_NONE = 0; /* No ESC failure. | */
    public static final int ESC_FAILURE_OVER_CURRENT = 1; /* Over current failure. | */
    public static final int ESC_FAILURE_OVER_VOLTAGE = 2; /* Over voltage failure. | */
    public static final int ESC_FAILURE_OVER_TEMPERATURE = 4; /* Over temperature failure. | */
@@ -20,4 +19,3 @@ public class ESC_FAILURE_FLAGS {
    public static final int ESC_FAILURE_GENERIC = 64; /* Generic ESC failure. | */
    public static final int ESC_FAILURE_FLAGS_ENUM_END = 65; /*  | */
 }
-            

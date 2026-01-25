@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * These flags encode the cellular network status
  */
 public class CELLULAR_STATUS_FLAG {
@@ -25,4 +25,3 @@ public class CELLULAR_STATUS_FLAG {
    public static final int CELLULAR_STATUS_FLAG_CONNECTED = 12; /* One or more packet data bearers is active and connected | */
    public static final int CELLULAR_STATUS_FLAG_ENUM_END = 13; /*  | */
 }
-            

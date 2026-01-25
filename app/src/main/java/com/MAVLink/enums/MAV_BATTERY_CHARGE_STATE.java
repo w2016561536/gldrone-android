@@ -6,7 +6,7 @@
 
 package com.MAVLink.enums;
 
-/** 
+/**
  * Enumeration for battery charge states.
  */
 public class MAV_BATTERY_CHARGE_STATE {
@@ -20,4 +20,3 @@ public class MAV_BATTERY_CHARGE_STATE {
    public static final int MAV_BATTERY_CHARGE_STATE_CHARGING = 7; /* Battery is charging. | */
    public static final int MAV_BATTERY_CHARGE_STATE_ENUM_END = 8; /*  | */
 }
-            
