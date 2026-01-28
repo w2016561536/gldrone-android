@@ -8,8 +8,8 @@
 
     <com.gldz.gldrone.RockerView
         android:id="@+id/rv_left"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="10dp"
@@ -17,8 +17,8 @@
 
     <com.gldz.gldrone.RockerView
         android:id="@+id/rv_right"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
@@ -77,7 +77,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:fontFamily="monospace"
-        android:text="MOD CH5:1500" />
+        android:text="MOD CH5:1500"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_ch6"
@@ -148,6 +149,7 @@
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/tv_ch1"
         android:text="3.70v   "
+        android:textColor="#00ff00"
         android:fontFamily="monospace" />
 
     <TextView
@@ -255,5 +257,66 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="35dp"
         android:text="ARM" />
+
+    <Switch
+        android:id="@+id/stick_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@+id/tv_connect"
+        android:text="交换左右手" />
+
+    <Button
+        android:id="@+id/setPitchZero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bt_disarm"
+        android:layout_alignStart="@+id/bt_disarm"
+        android:layout_marginTop="30dp"
+        android:text="俯仰归零" />
+
+    <TextView
+        android:id="@+id/text_PS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/setPitchZero"
+        android:layout_alignStart="@+id/setPitchZero"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="PS" />
+
+    <TextView
+        android:id="@+id/Text_rs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/setPitchZero"
+        android:layout_alignEnd="@+id/setPitchZero"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="RS" />
+
+    <EditText
+        android:id="@+id/edit_PS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_PS"
+        android:layout_alignStart="@+id/text_PS"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="-10dp"
+        android:ems="2"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/edit_RS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Text_rs"
+        android:layout_alignEnd="@+id/Text_rs"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="-10dp"
+        android:ems="2"
+        android:inputType="numberDecimal" />
 
 </RelativeLayout>

@@ -1,8 +1,11 @@
 package com.gldz.gldrone;
 
+import static java.lang.Math.abs;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,10 +14,15 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +33,7 @@ import com.MAVLink.common.msg_servo_output_raw;
 import com.MAVLink.common.msg_sys_status;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -58,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView tv_pwm1 = null;
     TextView tv_pwm2 = null;
     TextView tv_pwm3 = null;
-    TextView tv_pwm4 = null;
     TextView tv_rol, tv_pit, tv_yaw;
     RockerView rv_left = null;
     RockerView rv_right = null;
@@ -70,6 +78,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mMagSensor;
     private Sensor mOrientationSensor;
     private boolean isSupportVectorOri;
+
+    float left_x = -1;
+    float left_y = -1;
+    float right_x = -1;
+    float right_y = -1;
+    Switch switch_stick;
+
+    double pitchOffset = -45;
+
+    double pitchSensitive = 1.0;
+    double rollSensitive = 1.0;
+    Button setPitchZero;
+
+    EditText pitchSensEdit;
+    EditText rollSensEdit;
+    SharedPreferences sharedPreferences;
 
     /**
      * 隐藏虚拟按键，并且全屏
@@ -143,6 +167,103 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tv_pit = findViewById(R.id.tv_pit);
         tv_yaw = findViewById(R.id.tv_yaw);
 
+        switch_stick = findViewById(R.id.stick_switch);
+        rv_left = findViewById(R.id.rv_left);
+        rv_right = findViewById(R.id.rv_right);
+
+        left_x = rv_left.getX();
+        left_y = rv_left.getY();
+        right_x = rv_right.getX();
+        right_y = rv_right.getY();
+        setPitchZero = findViewById(R.id.setPitchZero);
+
+        pitchSensEdit = findViewById(R.id.edit_PS);
+        rollSensEdit = findViewById(R.id.edit_RS);
+
+        switch_stick.setOnCheckedChangeListener((buttonView, checked) -> {
+            RelativeLayout.LayoutParams lpLeft =
+                    (RelativeLayout.LayoutParams) rv_left.getLayoutParams();
+            RelativeLayout.LayoutParams lpRight =
+                    (RelativeLayout.LayoutParams) rv_right.getLayoutParams();
+
+            // 必须 new，不能直接互换引用
+            RelativeLayout.LayoutParams newLeftLp =
+                    new RelativeLayout.LayoutParams(lpRight);
+            RelativeLayout.LayoutParams newRightLp =
+                    new RelativeLayout.LayoutParams(lpLeft);
+
+            rv_left.setLayoutParams(newLeftLp);
+            rv_right.setLayoutParams(newRightLp);
+        });
+
+        setPitchZero.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pitchOffset = -1000000;
+            }
+        });
+
+        // 读取灵敏度与零点配置
+        sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+//        //获取Editor对象的引用
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        //将获取过来的值放入文件
+//        editor.putString("name", "lucas");
+//        editor.putInt("age", 30);
+//        editor.putBoolean("islogin",true);
+//        // 提交数据
+//        editor.commit();
+        pitchOffset = sharedPreferences.getFloat("pitchOffset", -45);
+        pitchSensitive = sharedPreferences.getFloat("pitchSensitive", 1);
+        rollSensitive = sharedPreferences.getFloat("rollSensitive", 1);
+
+        rollSensEdit.setText(String.format(Locale.US, "%.2f", rollSensitive));
+        pitchSensEdit.setText(String.format(Locale.US, "%.2f", pitchSensitive));
+
+        rollSensEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE ||
+                        i == EditorInfo.IME_ACTION_GO ||
+                        i == EditorInfo.IME_ACTION_SEND) {
+
+                    rollSensitive = Float.valueOf(textView.getText().toString());
+                    rollSensEdit.setText(String.format(Locale.US, "%.2f", rollSensitive));
+                    rollSensitive = Float.valueOf(textView.getText().toString());
+                    //获取Editor对象的引用
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    //将获取过来的值放入文件
+                    editor.putFloat("rollSensitive", (float) rollSensitive);
+                    // 提交数据
+                    editor.commit();
+                    textView.clearFocus();   // 主动失焦（可选但推荐）
+                    return true;      // 消费事件
+                }
+                return false;
+            }
+        });
+
+        pitchSensEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE ||
+                        i == EditorInfo.IME_ACTION_GO ||
+                        i == EditorInfo.IME_ACTION_SEND) {
+                    pitchSensitive = Float.valueOf(textView.getText().toString());
+                    pitchSensEdit.setText(String.format(Locale.US, "%.2f", pitchSensitive));
+                    pitchSensitive = Float.valueOf(textView.getText().toString());
+                    //获取Editor对象的引用
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    //将获取过来的值放入文件
+                    editor.putFloat("pitchSensitive", (float) pitchSensitive);
+                    // 提交数据
+                    editor.commit();
+                    textView.clearFocus();   // 主动失焦（可选但推荐）
+                    return true;      // 消费事件
+                }
+                return false;
+            }
+        });
 
         bt_setting = findViewById(R.id.bt_setting);
         bt_disarm = findViewById(R.id.bt_disarm);
@@ -219,10 +340,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             tv_arm.setText("Arm");
                             tv_arm.setTextColor(Color.BLUE);
                             bt_arm.setText("DISARM");
+                            setPitchZero.setEnabled(false);
+                            pitchSensEdit.setEnabled(false);
+                            rollSensEdit.setEnabled(false);
                         } else {
                             tv_arm.setText("Disarm");
                             tv_arm.setTextColor(Color.RED);
                             bt_arm.setText("ARM");
+                            if (flyMode == 1) {
+                                setPitchZero.setEnabled(true);
+                                pitchSensEdit.setEnabled(true);
+                                rollSensEdit.setEnabled(true);
+                            }
                         }
 
                     }
@@ -241,6 +370,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 String.format("%.0f", (float) sys_status.load / 10) + "%";
                         tv_bat.setText(bat);
                         tv_load.setText(load);
+                        if (sys_status.voltage_battery >= 3700) {
+                            tv_bat.setTextColor(0x00ff00);
+                        } else if (sys_status.voltage_battery >= 3500) {
+                            tv_bat.setTextColor(0xFFFF00);
+                        } else {
+                            tv_bat.setTextColor(0xFF0000);
+                        }
 
                     }
                 });
@@ -278,7 +414,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
 
-        rv_left = findViewById(R.id.rv_left);
         rv_left.setMode(false, false, false, false, true, true);
         rv_left.setRockerChangeListener(new RockerView.RockerChangeListener() {
             @Override
@@ -291,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 tv_ch4.setText("YAW CH4:" + x);
             }
         });
-        rv_right = findViewById(R.id.rv_right);
+
         rv_right.setRockerChangeListener(new RockerView.RockerChangeListener() {
 
             @Override
@@ -415,19 +550,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         };
         mTimer.schedule(mTimerTask, 20, 20);
 
-//        Thread t1 = new Thread(() -> {
-//            try {
-//                while (true) {
-//                    Thread.sleep(1000);
-//                    rv_left.xyReport();
-//                    rv_right.xyReport();
-//                }
-//            }catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//        t1.start();
-
         initPhoneSensors();
         setFlyMode(flyMode);
     }
@@ -438,29 +560,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (flyMode != flyModelast) {
             flyModelast = flyMode;
 
-            if (flyMode == 0) {
-                try {
-                    mSensorManager.unregisterListener(this, mGyroSensor);
-                    mSensorManager.unregisterListener(this, mAccSensor);
-                    mSensorManager.unregisterListener(this, mMagSensor);
-                }catch (Throwable e){
+            try {
+                mSensorManager.unregisterListener(this, mGyroSensor);
+                mSensorManager.unregisterListener(this, mAccSensor);
+                mSensorManager.unregisterListener(this, mMagSensor);
+            } catch (Throwable e) {
 
-                }
+            }
 
-                try {
-                    mSensorManager.unregisterListener(this, mOrientationSensor);
-                }catch (Throwable e){
+            try {
+                mSensorManager.unregisterListener(this, mOrientationSensor);
+            } catch (Throwable e) {
 
-                }
+            }
 
+            if (flyMode == 0) {  // 触摸
+                setPitchZero.setEnabled(false);
+                pitchSensEdit.setEnabled(false);
+                rollSensEdit.setEnabled(false);
                 rv_right.setXY(1500, 1500);
                 rv_right.xyReport();
                 rv_right.touchEnable = true;
-            } else {
-                if (isSupportVectorOri){
+            } else if (flyMode == 1) {
+                if (!mavlink.is_armed) {
+                    setPitchZero.setEnabled(true);
+                    pitchSensEdit.setEnabled(true);
+                    rollSensEdit.setEnabled(true);
+                }
+                if (isSupportVectorOri) {
                     mSensorManager.registerListener(this, mOrientationSensor,
                             SensorManager.SENSOR_DELAY_FASTEST);
-                }else {
+                } else {
                     mSensorManager.registerListener(this, mGyroSensor,
                             SensorManager.SENSOR_DELAY_FASTEST);
                     mSensorManager.registerListener(this, mAccSensor,
@@ -500,12 +630,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 System.arraycopy(event.values, 0, mMagValues, 0, mMagValues.length);// 获取数据
                 break;
             case Sensor.TYPE_ROTATION_VECTOR:
-                System.arraycopy(event.values,0, mRoationVector, 0, mRoationVector.length);
+                System.arraycopy(event.values, 0, mRoationVector, 0, mRoationVector.length);
                 break;
         }
-        if (isSupportVectorOri){
+        if (isSupportVectorOri) {
             SensorManager.getRotationMatrixFromVector(mRMatrix, mRoationVector);
-        }else {
+        } else {
             SensorManager.getRotationMatrix(mRMatrix, null, mAccValues, mMagValues);
         }
         SensorManager.getOrientation(mRMatrix, mPhoneAngleValues);// 此时获取到了手机的角度信息
@@ -513,8 +643,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        mPhonePitchTv.setText(String.format(Locale.CHINA, "Pitch: %f", Math.toDegrees(mPhoneAngleValues[1])));
 //        mPhoneRollTv.setText(String.format(Locale.CHINA, "Roll: %f", Math.toDegrees(mPhoneAngleValues[2])));
 
-        double rol = Math.toDegrees(-mPhoneAngleValues[1]);
-        double pit = Math.toDegrees(mPhoneAngleValues[2]) + 45;
+        if (abs(pitchOffset - (-1000000)) < 0.001f) {
+            pitchOffset = Math.toDegrees(mPhoneAngleValues[2]);
+            //获取Editor对象的引用
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            //将获取过来的值放入文件
+            editor.putFloat("pitchOffset", (float) pitchOffset);
+            // 提交数据
+            editor.commit();
+        }
+        double rol = Math.toDegrees(-mPhoneAngleValues[1]) * rollSensitive;
+        double pit = (Math.toDegrees(mPhoneAngleValues[2]) - pitchOffset) * pitchSensitive;
 
 
         //Log.i("SENSOR", String.valueOf(Math.toDegrees(mPhoneAngleValues[1])) + " " + String.valueOf(Math.toDegrees(mPhoneAngleValues[2])));
@@ -539,13 +678,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         for (Sensor sensor : sensorList) {
 //            Log.d(TAG, String.format(Locale.CHINA, "[Sensor] name: %s \tvendor:%s",
 //                    sensor.getName(), sensor.getVendor()));
-            if (sensor.getType() == Sensor.TYPE_ROTATION_VECTOR){
-                Toast.makeText(this,"手机支持融合角度", Toast.LENGTH_SHORT).show();
+            if (sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+                Toast.makeText(this, "手机支持融合角度", Toast.LENGTH_SHORT).show();
                 isSupportVectorOri = true;
             }
         }
-        if (!isSupportVectorOri){
-            Toast.makeText(this,"手机不支持融合角度，退化为加速度计", Toast.LENGTH_SHORT).show();
+        if (!isSupportVectorOri) {
+            Toast.makeText(this, "手机不支持融合角度，退化为加速度计", Toast.LENGTH_SHORT).show();
         }
         // 获取传感器
         mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
