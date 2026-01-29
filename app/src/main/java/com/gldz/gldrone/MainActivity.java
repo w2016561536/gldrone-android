@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     float[] mPhoneAngleValues = new float[3];
     float[] mRoationVector = new float[4];
     Button bt_setting = null;
-    Button bt_disarm = null;
+    //    Button bt_disarm = null;
     Button bt_arm = null;
     TextView tv_ch1 = null;
     TextView tv_ch2 = null;
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView tv_rol, tv_pit, tv_yaw;
     RockerView rv_left = null;
     RockerView rv_right = null;
+    RockerView CompThrStick = null;
     Mavlink mavlink;
     int flyMode = 0, flyModelast = -1;
     private SensorManager mSensorManager;
@@ -94,6 +95,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     EditText pitchSensEdit;
     EditText rollSensEdit;
     SharedPreferences sharedPreferences;
+    EditText pitchPlusCompInput;
+    EditText pitchMinusCompEdit;
+    EditText steeringCompEdit;
+
+    int pitchPlusComp = 0;
+    int pitchMinusComp = 0;
+    int steeringComp = 0;
 
     /**
      * 隐藏虚拟按键，并且全屏
@@ -158,10 +166,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tv_arm = findViewById(R.id.tv_arm);
         tv_bat = findViewById(R.id.tv_bat);
         tv_load = findViewById(R.id.tv_load);
-//        tv_pwm1 = (TextView) findViewById(R.id.tv_pwm1);
-//        tv_pwm2 = (TextView) findViewById(R.id.tv_pwm2);
-//        tv_pwm3 = (TextView) findViewById(R.id.tv_pwm3);
-//        tv_pwm4 = (TextView) findViewById(R.id.tv_pwm4);
 
         tv_rol = findViewById(R.id.tv_rol);
         tv_pit = findViewById(R.id.tv_pit);
@@ -170,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         switch_stick = findViewById(R.id.stick_switch);
         rv_left = findViewById(R.id.rv_left);
         rv_right = findViewById(R.id.rv_right);
+        CompThrStick = findViewById(R.id.CompThrStick);
 
         left_x = rv_left.getX();
         left_y = rv_left.getY();
@@ -179,6 +184,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         pitchSensEdit = findViewById(R.id.edit_PS);
         rollSensEdit = findViewById(R.id.edit_RS);
+        pitchPlusCompInput = findViewById(R.id.PitchPlusCompensate);
+        pitchMinusCompEdit = findViewById(R.id.PitchMinusCompensateInput);
+
+        steeringCompEdit = findViewById(R.id.STRInput);
 
         switch_stick.setOnCheckedChangeListener((buttonView, checked) -> {
             RelativeLayout.LayoutParams lpLeft =
@@ -217,6 +226,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         pitchSensitive = sharedPreferences.getFloat("pitchSensitive", 1);
         rollSensitive = sharedPreferences.getFloat("rollSensitive", 1);
 
+        pitchPlusComp = sharedPreferences.getInt("pitchPlusComp", 0);
+        pitchMinusComp = sharedPreferences.getInt("pitchMinusComp", 0);
+        steeringComp = sharedPreferences.getInt("steeringComp", 0);
+
+        steeringCompEdit.setText(String.valueOf(steeringComp));
+        pitchPlusCompInput.setText(String.valueOf(pitchPlusComp));
+        pitchMinusCompEdit.setText(String.valueOf(pitchMinusComp));
+
         rollSensEdit.setText(String.format(Locale.US, "%.2f", rollSensitive));
         pitchSensEdit.setText(String.format(Locale.US, "%.2f", pitchSensitive));
 
@@ -225,7 +242,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_DONE ||
                         i == EditorInfo.IME_ACTION_GO ||
-                        i == EditorInfo.IME_ACTION_SEND) {
+                        i == EditorInfo.IME_ACTION_SEND ||
+                        i == EditorInfo.IME_ACTION_NEXT
+                ) {
 
                     rollSensitive = Float.valueOf(textView.getText().toString());
                     rollSensEdit.setText(String.format(Locale.US, "%.2f", rollSensitive));
@@ -237,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     // 提交数据
                     editor.commit();
                     textView.clearFocus();   // 主动失焦（可选但推荐）
-                    return true;      // 消费事件
+//                    return true;      // 消费事件
                 }
                 return false;
             }
@@ -248,7 +267,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_DONE ||
                         i == EditorInfo.IME_ACTION_GO ||
-                        i == EditorInfo.IME_ACTION_SEND) {
+                        i == EditorInfo.IME_ACTION_SEND ||
+                        i == EditorInfo.IME_ACTION_NEXT
+                ) {
                     pitchSensitive = Float.valueOf(textView.getText().toString());
                     pitchSensEdit.setText(String.format(Locale.US, "%.2f", pitchSensitive));
                     pitchSensitive = Float.valueOf(textView.getText().toString());
@@ -259,14 +280,80 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     // 提交数据
                     editor.commit();
                     textView.clearFocus();   // 主动失焦（可选但推荐）
-                    return true;      // 消费事件
+//                    return true;      // 消费事件
+                }
+                return false;
+            }
+        });
+
+        steeringCompEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE ||
+                        i == EditorInfo.IME_ACTION_GO ||
+                        i == EditorInfo.IME_ACTION_SEND ||
+                        i == EditorInfo.IME_ACTION_NEXT
+                ) {
+                    steeringComp = Integer.valueOf(textView.getText().toString());
+                    //获取Editor对象的引用
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    //将获取过来的值放入文件
+                    editor.putInt("steeringComp", steeringComp);
+                    // 提交数据
+                    editor.commit();
+                    textView.clearFocus();   // 主动失焦（可选但推荐）
+//                    return true;      // 消费事件
+                }
+                return false;
+            }
+        });
+
+        pitchPlusCompInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE ||
+                        i == EditorInfo.IME_ACTION_GO ||
+                        i == EditorInfo.IME_ACTION_SEND ||
+                        i == EditorInfo.IME_ACTION_NEXT
+                ) {
+                    pitchPlusComp = Integer.valueOf(textView.getText().toString());
+                    //获取Editor对象的引用
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    //将获取过来的值放入文件
+                    editor.putInt("pitchPlusComp", pitchPlusComp);
+                    // 提交数据
+                    editor.commit();
+                    textView.clearFocus();   // 主动失焦（可选但推荐）
+//                    return true;      // 消费事件
+                }
+                return false;
+            }
+        });
+
+        pitchMinusCompEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE ||
+                        i == EditorInfo.IME_ACTION_GO ||
+                        i == EditorInfo.IME_ACTION_SEND ||
+                        i == EditorInfo.IME_ACTION_NEXT
+                ) {
+                    pitchMinusComp = Integer.valueOf(textView.getText().toString());
+                    //获取Editor对象的引用
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    //将获取过来的值放入文件
+                    editor.putInt("pitchMinusComp", pitchMinusComp);
+                    // 提交数据
+                    editor.commit();
+                    textView.clearFocus();   // 主动失焦（可选但推荐）
+//                    return true;      // 消费事件
                 }
                 return false;
             }
         });
 
         bt_setting = findViewById(R.id.bt_setting);
-        bt_disarm = findViewById(R.id.bt_disarm);
+//        bt_disarm = findViewById(R.id.bt_disarm);
         bt_arm = findViewById(R.id.bt_arm);
 
         mavlink = new Mavlink();
@@ -343,6 +430,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             setPitchZero.setEnabled(false);
                             pitchSensEdit.setEnabled(false);
                             rollSensEdit.setEnabled(false);
+                            pitchPlusCompInput.setEnabled(false);
+                            pitchMinusCompEdit.setEnabled(false);
+                            steeringCompEdit.setEnabled(false);
                         } else {
                             tv_arm.setText("Disarm");
                             tv_arm.setTextColor(Color.RED);
@@ -352,6 +442,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 pitchSensEdit.setEnabled(true);
                                 rollSensEdit.setEnabled(true);
                             }
+                            pitchPlusCompInput.setEnabled(true);
+                            pitchMinusCompEdit.setEnabled(true);
+                            steeringCompEdit.setEnabled(true);
                         }
 
                     }
@@ -371,11 +464,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         tv_bat.setText(bat);
                         tv_load.setText(load);
                         if (sys_status.voltage_battery >= 3700) {
-                            tv_bat.setTextColor(0x00ff00);
+                            tv_bat.setTextColor(0xff00ff00);
                         } else if (sys_status.voltage_battery >= 3500) {
-                            tv_bat.setTextColor(0xFFFF00);
+                            tv_bat.setTextColor(0xffFFFF00);
                         } else {
-                            tv_bat.setTextColor(0xFF0000);
+                            tv_bat.setTextColor(0xffFF0000);
                         }
 
                     }
@@ -419,13 +512,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void report(int x, int y) {
                 // TODO Auto-generated method stub
-                ch[2] = y;
+//                ch[2] = y;
                 ch[3] = x;
                 //Log.i("LEFT", String.valueOf(x) + " " + String.valueOf(y));
-                tv_ch3.setText("THR CH3:" + y);
                 tv_ch4.setText("YAW CH4:" + x);
+                // 计算转向比例
+                int new_Thr = 0;
+                if (rv_right.getXY()[1] < 1500) {
+                    new_Thr =
+                            rv_left.getXY()[1] + (1500 - rv_right.getXY()[1]) * pitchPlusComp / 100
+                                    + (abs(rv_right.getXY()[0] - 1500) * steeringComp / 100);
+                }else{
+                    new_Thr =
+                            rv_left.getXY()[1] + (1500 - rv_right.getXY()[1]) * pitchMinusComp / 100
+                                    + (abs(rv_right.getXY()[0] - 1500) * steeringComp / 100);
+                }
+                new_Thr = RockerView.limit_rc(new_Thr);
+                if (rv_left.getXY()[1] < 1200){
+                    new_Thr = 1000;
+                }
+                CompThrStick.setXY(1500,new_Thr);
+                ch[2] = new_Thr;
+                tv_ch3.setText("THR CH3:" + new_Thr);
             }
         });
+
+        CompThrStick.setMode(true, false, false, true, true, true);
 
         rv_right.setRockerChangeListener(new RockerView.RockerChangeListener() {
 
@@ -436,6 +548,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 ch[1] = y;
                 tv_ch1.setText("ROL CH1:" + x);
                 tv_ch2.setText("PIT CH2:" + y);
+                // 计算转向比例
+                int new_Thr = 0;
+                if (rv_right.getXY()[1] < 1500) {
+                    new_Thr =
+                            rv_left.getXY()[1] + (1500 - rv_right.getXY()[1]) * pitchPlusComp / 100
+                                    + (abs(rv_right.getXY()[0] - 1500) * steeringComp / 100);
+                }else{
+                    new_Thr =
+                            rv_left.getXY()[1] + (1500 - rv_right.getXY()[1]) * pitchMinusComp / 100
+                                    + (abs(rv_right.getXY()[0] - 1500) * steeringComp / 100);
+                }
+                new_Thr = RockerView.limit_rc(new_Thr);
+                if (rv_left.getXY()[1] < 1200){
+                    new_Thr = 1000;
+                }
+                CompThrStick.setXY(1500,new_Thr);
+                ch[2] = new_Thr;
+                tv_ch3.setText("THR CH3:" + new_Thr);
             }
         });
 
@@ -507,7 +637,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 // TODO Auto-generated method stub
 
                 if (mavlink.is_armed) {
-                    mavlink.sendMsgDisarm(0, 0);
+                    mavlink.sendMsgDisarm(0, 21196);
                 } else {
                     mavlink.sendMsgDisarm(1, 0);
                 }
@@ -527,17 +657,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
-        bt_disarm.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-
-                Toast.makeText(getApplicationContext(), "FORCE DISARM", Toast.LENGTH_SHORT).show();
-                mavlink.sendMsgDisarm(0, 21196);
-
-            }
-        });
+//        bt_disarm.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//
+//                Toast.makeText(getApplicationContext(), "FORCE DISARM", Toast.LENGTH_SHORT).show();
+//                mavlink.sendMsgDisarm(0, 21196);
+//
+//            }
+//        });
 
         Timer mTimer = new Timer();
         TimerTask mTimerTask = new TimerTask() {
@@ -664,6 +794,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tv_ch1.setText("ROL CH1:" + ch[0]);
         tv_ch2.setText("PIT CH2:" + ch[1]);
         rv_right.setXY(ch[0], ch[1]);
+        // 计算转向比例
+        int new_Thr = 0;
+        if (rv_right.getXY()[1] < 1500) {
+            new_Thr =
+                    rv_left.getXY()[1] + (1500 - rv_right.getXY()[1]) * pitchPlusComp / 100
+                            + (abs(rv_right.getXY()[0] - 1500) * steeringComp / 100);
+        }else{
+            new_Thr =
+                    rv_left.getXY()[1] + (1500 - rv_right.getXY()[1]) * pitchMinusComp / 100
+                            + (abs(rv_right.getXY()[0] - 1500) * steeringComp / 100);
+        }
+        new_Thr = RockerView.limit_rc(new_Thr);
+        if (rv_left.getXY()[1] < 1200){
+            new_Thr = 1000;
+        }
+        CompThrStick.setXY(1500,new_Thr);
+        ch[2] = new_Thr;
+        tv_ch3.setText("THR CH3:" + new_Thr);
     }
 
     @Override

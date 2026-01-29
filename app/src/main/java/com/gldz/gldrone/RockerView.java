@@ -224,6 +224,20 @@ public class RockerView extends View {
 
     }
 
+    public int[] getXY(){
+        if(mCenterPoint != null)
+        {
+//            int xValue = (int)(1500 + 500 * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
+//            int yValue = (int)(1500 + 500 * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
+
+
+            int xValue = (int)(1500 + Sensitivity * (mRockerBtn_X - mCenterPoint.x) / Differ_R);
+            int yValue = (int)(1500 + Sensitivity * (mCenterPoint.y - mRockerBtn_Y) / Differ_R);
+            return new int[]{xValue, yValue};
+        }
+        return new int[]{1500, 1500};
+    }
+
     public static int limit_rc(int input)
     {
         int rc = input;

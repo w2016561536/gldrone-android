@@ -7,13 +7,27 @@
     >
 
     <com.gldz.gldrone.RockerView
+        android:id="@+id/CompThrStick"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_alignEnd="@+id/rv_left"
+        android:layout_alignBottom="@+id/rv_left"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:alpha="0.3"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:longClickable="false" />
+
+    <com.gldz.gldrone.RockerView
         android:id="@+id/rv_left"
         android:layout_width="280dp"
         android:layout_height="280dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp" />
 
     <com.gldz.gldrone.RockerView
         android:id="@+id/rv_right"
@@ -241,21 +255,12 @@
         android:text="SET" />
 
     <Button
-        android:id="@+id/bt_disarm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/bt_setting"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="6dp"
-        android:text="Disarm" />
-
-    <Button
         android:id="@+id/bt_arm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="20dp"
         android:text="ARM" />
 
     <Switch
@@ -272,9 +277,8 @@
         android:id="@+id/setPitchZero"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/bt_disarm"
-        android:layout_alignStart="@+id/bt_disarm"
-        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="63dp"
         android:text="俯仰归零" />
 
     <TextView
@@ -283,8 +287,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/setPitchZero"
         android:layout_alignStart="@+id/setPitchZero"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="0dp"
         android:text="PS" />
 
     <TextView
@@ -293,7 +297,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/setPitchZero"
         android:layout_alignEnd="@+id/setPitchZero"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="0dp"
         android:layout_marginEnd="10dp"
         android:text="RS" />
 
@@ -303,8 +307,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/text_PS"
         android:layout_alignStart="@+id/text_PS"
-        android:layout_marginTop="5dp"
         android:layout_marginStart="-10dp"
+        android:layout_marginTop="0dp"
         android:ems="2"
         android:inputType="numberDecimal" />
 
@@ -314,9 +318,80 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/Text_rs"
         android:layout_alignEnd="@+id/Text_rs"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="0dp"
         android:layout_marginEnd="-10dp"
         android:ems="2"
         android:inputType="numberDecimal" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_PS"
+        android:layout_alignStart="@+id/edit_PS"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="0dp"
+        android:text="P+C%" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_RS"
+        android:layout_alignEnd="@+id/edit_RS"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="5dp"
+        android:text="P-C%" />
+
+    <EditText
+        android:id="@+id/PitchPlusCompensate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_alignStart="@+id/edit_PS"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:ems="2"
+        android:inputType="number"
+        android:maxLength="2"
+        android:numeric="integer" />
+
+    <EditText
+        android:id="@+id/PitchMinusCompensateInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_alignEnd="@+id/edit_RS"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:ems="2"
+        android:inputType="number"
+        android:maxLength="2"
+        android:numeric="integer"
+        android:phoneNumber="false" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/PitchPlusCompensate"
+        android:layout_alignStart="@+id/PitchPlusCompensate"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="15dp"
+        android:text="STRC%" />
+
+    <EditText
+        android:id="@+id/STRInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/PitchMinusCompensateInput"
+        android:layout_alignEnd="@+id/PitchMinusCompensateInput"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:ems="2"
+        android:inputType="number"
+        android:maxLength="2"
+        android:numeric="integer" />
+
 
 </RelativeLayout>
